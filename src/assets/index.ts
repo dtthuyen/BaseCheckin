@@ -1,0 +1,9 @@
+export const IC_APP = require('./icons/icon_app.png');
+export const IC_MAIL = require('./icons/email.png');
+export const IC_LOCK = require('./icons/lock_24px.png');
+export const IC_CHECKIN_HAND = require('./icons/ic_checkin_hand.png');
+export const IC_CAMERA = require('./icons/camera.png');
+export const IC_LOCATION = require('./icons/location.png');
+export const IMAGE_BGR_LOGIN = require('./images/Bg.png');
+export const IC_PREVIOUS = require('./icons/previous.png');
+export const IC_NEXT = require('./icons/next.png');

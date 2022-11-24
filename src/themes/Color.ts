@@ -1,0 +1,16 @@
+export const Color = {
+  background_color: '#007AFF',
+  blue: '#0fb5e9',
+  green: '#34C759',
+  green1: '#46d35e',
+  green2: 'rgb(224,239,228)',
+  white: '#fff',
+  black1: '#000',
+  black2: '#111111',
+  gray1: '#333333',
+  gray3: '#828282',
+  gray4: '#BDBDBD',
+  gray6: '#F2F2F2',
+  red: '#EB5757',
+  gray_border: 'rgba(0, 0, 0, 0.1)',
+};
