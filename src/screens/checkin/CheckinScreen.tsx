@@ -10,8 +10,12 @@ import MapView, {
 import moment from 'moment';
 import {RNCamera} from 'react-native-camera';
 import {CheckEnableScreen} from './CheckEnableScreen';
+import {useUser} from '../../store/constant';
+import {Fetch} from '../../utils/fetch';
 
 const CheckinScreen = () => {
+  const user = useUser();
+
   const [enableClient, setEnableClient, setDisableClient] = useBoolean(false);
   const [enableCamera, setEnableCamera, setDisableCamera] = useBoolean(false);
   const [enableLocation, setEnableLocation, setDisableLocation] =
@@ -58,10 +62,30 @@ const CheckinScreen = () => {
   }, []);
 
   const onPressCheckin = useCallback(async () => {
-    // if (this.camera) {
-    //   const data = await takePictureAsync();
-    //   console.warn('takePictureResponse ', data);
-    // }
+    const form = {
+      client_key: user.client_key,
+      client_auth: 1,
+      access_token: user.access_token,
+      __code: user.__code,
+      lat: 112,
+      lng: 111,
+      client_id: user.mobile_clients['1'].id,
+      ts: new Date().getTime(),
+      photo: '',
+    };
+
+    const formData = new FormData();
+
+    for (let key in form) {
+      formData.append(key, form[key]);
+    }
+
+    const {data} = await Fetch.post(
+      'checkin.base.vn/ajax/api/me/checkin/mobile',
+      formData,
+    );
+
+    return data;
   }, []);
 
   enableLatestRenderer();

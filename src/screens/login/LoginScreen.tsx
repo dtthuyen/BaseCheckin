@@ -99,7 +99,7 @@ const TextForgotPwd = styled.Text`
 
 const LoginScreen = () => {
   const [params, setParams] = useState<LoginParams>({
-    username: 'hien1@yopmail.com',
+    username: 'hien2@yopmail.com',
     password: 'hien123456',
     // username: '',
     // password: '',
@@ -148,7 +148,6 @@ const LoginScreen = () => {
   }, []);
 
   const user = useUser();
-  console.log(user);
 
   return (
     <Container>

@@ -1,4 +1,4 @@
-import {useUser} from '../../store/constant';
+import {setClientsAction, useUser} from '../../store/constant';
 import {Fetch} from '../../utils/fetch';
 import {useCallback, useEffect} from 'react';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
@@ -52,6 +52,8 @@ export const CheckEnableScreen = ({
 }: props) => {
   const user = useUser();
 
+  console.log(user);
+
   const [{value, loading, error}, onGetClients] = useAsyncFn(async () => {
     const formData = {
       client_key: user.client_key,
@@ -74,12 +76,14 @@ export const CheckEnableScreen = ({
 
     if (data.code === 1) {
       setEnableClient();
+      setClientsAction(data.mobile_clients);
     }
 
     return data;
   }, []);
 
   useEffect(() => {
+    user.mobile_clients ? setEnableClient() : setDisableClient;
     check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE)
       .then(result => {
         switch (result) {

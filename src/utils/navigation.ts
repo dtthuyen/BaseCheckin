@@ -31,8 +31,10 @@ export const goBack = () => navigation().goBack();
 export const toggleDrawer = () =>
   navigation().dispatch(DrawerActions.toggleDrawer());
 
-export const replaceWithMainScreen = createReplace('Main')
+export const replaceWithMainScreen = createReplace('Main');
 
 export const navigateToLoginScreen = createNavigate('Login');
 
 export const navigateToMainScreen = createNavigate('Main');
+
+export const navigateToHomeScreen = createNavigate('Home');

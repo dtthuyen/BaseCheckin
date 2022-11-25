@@ -16,6 +16,17 @@ const {actions, reducer} = createSlice({
       }
       return null;
     },
+    setClients: (state, action: PayloadAction<any>) => {
+      if (action.payload) {
+        return {
+          ...state,
+          mobile_clients: {
+            ...action.payload,
+          },
+        };
+      }
+      return null;
+    },
     reset: () => {
       return {};
     },
@@ -38,8 +49,11 @@ export const constantSetStore = (store: Store) => {
 };
 
 export const setUserAction = (data: RawUser | null) => {
-  console.log(data);
   return _getStore().dispatch(actions.setUser(data));
+};
+
+export const setClientsAction = (data: any) => {
+  return _getStore().dispatch(actions.setClients(data));
 };
 
 export const resetUser = () => {
@@ -48,6 +62,10 @@ export const resetUser = () => {
 
 export const useUser = () => {
   return useSelector(state => state['constant'].user) || {};
+};
+
+export const useClients = () => {
+  return useSelector(state => state['constant'].user.mobile_clients) || {};
 };
 
 export const constantReducer = combineReducers({
