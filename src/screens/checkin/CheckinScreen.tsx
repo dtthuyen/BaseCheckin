@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import {Color} from '../../themes/Color';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import useBoolean from '../../hooks/useBoolean';
 import MapView, {
   enableLatestRenderer,
@@ -8,12 +8,15 @@ import MapView, {
 } from 'react-native-maps';
 // @ts-ignore
 import moment from 'moment';
-import {RNCamera} from 'react-native-camera';
 import {CheckEnableScreen} from './CheckEnableScreen';
 import {useUser} from '../../store/constant';
 import {Fetch} from '../../utils/fetch';
+import {useAsyncFn} from '../../hooks/useAsyncFn';
+import {RNCamera} from 'react-native-camera';
+import {newFormData} from '../../utils/func';
 
 const CheckinScreen = () => {
+  let camera: any;
   const user = useUser();
 
   const [enableClient, setEnableClient, setDisableClient] = useBoolean(false);
@@ -39,6 +42,7 @@ const CheckinScreen = () => {
   const CameraCheckIn = useMemo(() => {
     return (
       <RNCamera
+        ref={ref => (camera = ref)}
         style={style.styleView}
         type={RNCamera.Constants.Type.front}
         flashMode={RNCamera.Constants.FlashMode.on}
@@ -62,7 +66,12 @@ const CheckinScreen = () => {
   }, []);
 
   const onPressCheckin = useCallback(async () => {
-    const form = {
+    await onCheckIn();
+  }, []);
+
+  const [{value, loading, error}, onCheckIn] = useAsyncFn(async () => {
+    const {uri} = await camera.takePictureAsync();
+    const form = newFormData({
       client_key: user.client_key,
       client_auth: 1,
       access_token: user.access_token,
@@ -71,22 +80,16 @@ const CheckinScreen = () => {
       lng: 111,
       client_id: user.mobile_clients['1'].id,
       ts: new Date().getTime(),
-      photo: '',
-    };
-
-    const formData = new FormData();
-
-    for (let key in form) {
-      formData.append(key, form[key]);
-    }
+      photo: uri,
+    });
 
     const {data} = await Fetch.post(
       'checkin.base.vn/ajax/api/me/checkin/mobile',
-      formData,
+      form,
     );
 
     return data;
-  }, []);
+  });
 
   enableLatestRenderer();
 

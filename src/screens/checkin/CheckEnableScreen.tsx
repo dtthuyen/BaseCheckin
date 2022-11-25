@@ -52,8 +52,6 @@ export const CheckEnableScreen = ({
 }: props) => {
   const user = useUser();
 
-  console.log(user);
-
   const [{value, loading, error}, onGetClients] = useAsyncFn(async () => {
     const formData = {
       client_key: user.client_key,
@@ -83,7 +81,6 @@ export const CheckEnableScreen = ({
   }, []);
 
   useEffect(() => {
-    user.mobile_clients ? setEnableClient() : setDisableClient;
     check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE)
       .then(result => {
         switch (result) {

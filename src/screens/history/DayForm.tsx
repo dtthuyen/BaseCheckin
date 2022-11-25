@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {useCallback} from 'react';
 import {ModalLogs} from './ModalLogs';
 import useBoolean from '../../hooks/useBoolean';
+import {format_DMY, format_HH_MM} from '../../utils/func';
 
 interface propsDayComponent {
   state: any;
@@ -19,14 +20,14 @@ export const DayForm = ({
   nameOffice,
   day,
 }: propsDayComponent) => {
-  const cin = log?.checkin || '';
-  const cout = log?.checkout || '';
+  const cin = format_HH_MM(log?.checkin);
+  const cout = format_HH_MM(log?.checkout);
 
-  const timeIn = new Date('1970-01-01T' + '08:30').getTime();
-  const timeOut = new Date('1970-01-01T' + '17:30').getTime();
+  const timeIn = new Date(format_DMY(log?.checkin) + 'T' + '08:30').getTime();
+  const timeOut = new Date(format_DMY(log?.checkout) + 'T' + '17:30').getTime();
 
-  const _in = new Date('1970-01-01T' + cin).getTime();
-  const _out = new Date('1970-01-01T' + cout).getTime();
+  const _in = log?.checkin;
+  const _out = log?.checkout;
 
   const colorIn = timeIn > _in ? Color.green : Color.red;
   const colorOut = timeOut < _out ? Color.green : Color.red;
@@ -43,7 +44,9 @@ export const DayForm = ({
       {state === 'disabled' ? null : (
         <View>
           <TextCheckin _color={colorIn}>{cin}</TextCheckin>
-          <TextCheckout _color={colorOut}>{cout}</TextCheckout>
+          <TextCheckout _color={colorOut}>
+            {cout === 'Invalid date' ? '--:--' : cout}
+          </TextCheckout>
         </View>
       )}
 

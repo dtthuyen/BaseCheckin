@@ -74,7 +74,7 @@ export const HistoryScreen = () => {
       client_auth: 1,
       access_token: user.access_token,
       __code: user.__code,
-      client_id: user.mobile_clients['1'].id,
+      client_id: user.mobile_clients['2'].id,
       time_start: 1667236454,
       time_end: 1669828454,
     };
@@ -99,26 +99,25 @@ export const HistoryScreen = () => {
     onGetHistory().then(r => {
       if (r.code === 1) {
         let newLog = {
-          name: user.mobile_clients['1'].name,
+          name: user.mobile_clients['2'].name,
         };
         r.logs.forEach(item => {
           const item_logs = item.logs;
           const _day = moment(new Date(item.date * 1000))
             .format('DD/MM')
             .toString();
+          let len = item_logs.length;
+          const _in = item_logs[0].time;
+          len--;
+          const _out = len > 0 ? item_logs[len].time : '--:--';
           const temp = {
             [_day]: {
-              checkin: moment(new Date(item_logs.shift().time * 1000))
-                .format('hh:mm')
-                .toString(),
-              checkout: moment(new Date(item_logs.pop().time * 1000))
-                .format('hh:mm')
-                .toString(),
+              checkin: _in,
+              checkout: _out,
             },
           };
 
           newLog = {...newLog, ...temp};
-          // console.log(newLog);
 
           let logs = [];
           item.logs.forEach(i => {
@@ -146,6 +145,8 @@ export const HistoryScreen = () => {
     });
   }, []);
 
+  console.log(log['10/11']);
+
   return (
     <Container>
       <Calendar
@@ -156,6 +157,22 @@ export const HistoryScreen = () => {
         theme={{
           textSectionTitleColor: Color.black1,
           weekVerticalMargin: 0,
+          'stylesheet.calendar.header': {
+            week: {
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              backgroundColor: Color.gray6,
+              alignItems: 'center',
+              height: 44,
+            },
+            dayHeader: {
+              borderColor: Color.gray_border,
+              borderWidth: 0.5,
+              flex: 1,
+              height: '100%',
+              textAlign: 'center',
+            },
+          },
         }}
         showSixWeeks={true}
         renderHeader={date => <Header date={date} />}

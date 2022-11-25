@@ -90,7 +90,7 @@ const Items = ({log, name}: props) => {
   return (
     <View>
       {log.map((item, index) => (
-        <ViewItem>
+        <ViewItem key={index}>
           <TextLog>{item.time}</TextLog>
           <TextIP>{'IP: ' + item.IP + ' ' + name}</TextIP>
         </ViewItem>
