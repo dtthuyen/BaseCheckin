@@ -171,6 +171,7 @@ export const HistoryScreen = () => {
               flex: 1,
               height: '100%',
               textAlign: 'center',
+              paddingTop: 14,
             },
           },
         }}
