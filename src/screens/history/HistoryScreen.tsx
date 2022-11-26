@@ -74,7 +74,7 @@ export const HistoryScreen = () => {
       client_auth: 1,
       access_token: user.access_token,
       __code: user.__code,
-      client_id: user.mobile_clients['1'].id,
+      client_id: user.mobile_clients[1].id,
       time_start: 1667236454,
       time_end: 1669828454,
     };
@@ -99,7 +99,7 @@ export const HistoryScreen = () => {
     onGetHistory().then(r => {
       if (r.code === 1) {
         let newLog = {
-          name: user.mobile_clients['1'].name,
+          name: user.mobile_clients[1].name,
         };
         r.logs.forEach(item => {
           const item_logs = item.logs;

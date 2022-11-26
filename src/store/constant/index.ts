@@ -16,9 +16,9 @@ const {actions, reducer} = createSlice({
     setClients: (state, action: PayloadAction<any>) => {
       return {
         ...state,
-        mobile_clients: {
+        mobile_clients: [
           ...action.payload,
-        },
+      ],
       };
     },
     setToggleCheckin: (state, action: PayloadAction<boolean>) => {

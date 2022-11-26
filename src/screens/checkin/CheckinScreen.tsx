@@ -75,7 +75,7 @@ const CheckinScreen = () => {
 
   const [{value, loading, error}, onCheckIn] = useAsyncFn(async () => {
     const {uri} = await camera.takePictureAsync();
-    const id = user.mobile_clients['1'].id;
+    const id = user.mobile_clients[1].id;
 
     const form = newFormData({
       client_key: user.client_key,
