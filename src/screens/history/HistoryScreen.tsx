@@ -145,6 +145,8 @@ export const HistoryScreen = () => {
     });
   }, [check]);
 
+  console.log(user.mobile_clients);
+
   return (
     <Container>
       <Calendar

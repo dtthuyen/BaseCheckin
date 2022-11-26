@@ -4,6 +4,7 @@ import {useCallback} from 'react';
 import {ModalLogs} from './ModalLogs';
 import useBoolean from '../../hooks/useBoolean';
 import {format_DMY, format_HH_MM} from '../../utils/func';
+import moment from 'moment';
 
 interface propsDayComponent {
   state: any;
@@ -20,17 +21,36 @@ export const DayForm = ({
   nameOffice,
   day,
 }: propsDayComponent) => {
+  const newDate = moment(new Date(day.dateString)).format('dddd').toString();
   const cin = format_HH_MM(log?.checkin);
   const cout = format_HH_MM(log?.checkout);
 
-  const timeIn = new Date(format_DMY(log?.checkin) + 'T' + '08:30').getTime();
-  const timeOut = new Date(format_DMY(log?.checkout) + 'T' + '17:30').getTime();
+  const timeInM = new Date(format_DMY(log?.checkin) + 'T' + '08:30').getTime();
+  const timeOutM = new Date(format_DMY(log?.checkin) + 'T' + '12:00').getTime();
+  const timeInA = new Date(format_DMY(log?.checkin) + 'T' + '13:00').getTime();
+  const timeOutA = new Date(
+    format_DMY(log?.checkout) + 'T' + '17:30',
+  ).getTime();
 
   const _in = log?.checkin * 1000;
   const _out = log?.checkout * 1000;
 
-  const colorIn = timeIn > _in ? Color.green : Color.red;
-  const colorOut = timeOut < _out ? Color.green : Color.red;
+  const colorIn =
+    timeInM > _in
+      ? Color.green
+      : timeOutM < _in && timeInA > _in
+      ? 'orange'
+      : Color.red;
+  const colorOut =
+    newDate === 'Saturday'
+      ? timeOutM < _out
+        ? Color.green
+        : Color.red
+      : timeOutA < _out
+      ? Color.green
+      : timeInA > _out && timeOutM < _out
+      ? 'orange'
+      : Color.red;
 
   const onPressDay = useCallback(() => {
     if (log) openModal();
