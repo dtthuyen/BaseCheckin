@@ -9,15 +9,23 @@ import MapView, {
 // @ts-ignore
 import moment from 'moment';
 import {CheckEnableScreen} from './CheckEnableScreen';
-import {useUser} from '../../store/constant';
+import {setToggleCheckin, useUser} from '../../store/constant';
 import {Fetch} from '../../utils/fetch';
 import {useAsyncFn} from '../../hooks/useAsyncFn';
 import {RNCamera} from 'react-native-camera';
 import {newFormData} from '../../utils/func';
+import {ActivityIndicator, Alert} from 'react-native';
 
 const CheckinScreen = () => {
   let camera: any;
   const user = useUser();
+
+  const toggleCheck = user.toggleCheckin ?? false;
+  const [check, setCheck] = useState(toggleCheck);
+
+  useEffect(() => {
+    setToggleCheckin(check);
+  }, [check]);
 
   const [enableClient, setEnableClient, setDisableClient] = useBoolean(false);
   const [enableCamera, setEnableCamera, setDisableCamera] = useBoolean(false);
@@ -65,20 +73,18 @@ const CheckinScreen = () => {
     );
   }, []);
 
-  const onPressCheckin = useCallback(async () => {
-    await onCheckIn();
-  }, []);
-
   const [{value, loading, error}, onCheckIn] = useAsyncFn(async () => {
     const {uri} = await camera.takePictureAsync();
+    const id = user.mobile_clients['1'].id;
+
     const form = newFormData({
       client_key: user.client_key,
       client_auth: 1,
       access_token: user.access_token,
       __code: user.__code,
-      lat: 112,
-      lng: 111,
-      client_id: user.mobile_clients['1'].id,
+      lat: position['coords']?.latitude || 112,
+      lng: position['coords']?.longitude || 111,
+      client_id: id,
       ts: new Date().getTime(),
       photo: uri,
     });
@@ -88,8 +94,24 @@ const CheckinScreen = () => {
       form,
     );
 
+    if (data.code === 1) {
+      setCheck(!check);
+      Alert.alert('Bạn đã check in');
+    }
+
     return data;
   });
+
+  const onPressCheckin = useCallback(() => {
+    onCheckIn().then(r => {
+      if (r.code === 1) {
+        setCheck(!check);
+        Alert.alert('Bạn đã check in');
+      }
+    });
+  }, []);
+
+  const [position, setPosition] = useState({});
 
   enableLatestRenderer();
 
@@ -100,7 +122,12 @@ const CheckinScreen = () => {
       <ViewLocation>
         <MapView
           provider={PROVIDER_GOOGLE}
-          region={style.regionMapView}
+          region={{
+            latitude: position['coords'].latitude || 112,
+            longitude: position['coords']?.longitude || 111,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
+          }}
           showsUserLocation={true}
           style={style.styleView}
         />
@@ -108,8 +135,12 @@ const CheckinScreen = () => {
 
       <ViewCamera>{CameraCheckIn}</ViewCamera>
 
-      <BtnCheck onPress={onPressCheckin}>
-        <TextCheck>chấm công</TextCheck>
+      <BtnCheck onPress={onCheckIn}>
+        {loading ? (
+          <ActivityIndicator color={Color.green} />
+        ) : (
+          <TextCheck>chấm công</TextCheck>
+        )}
       </BtnCheck>
 
       <ViewInfo>
@@ -118,6 +149,7 @@ const CheckinScreen = () => {
     </ContainerCheckIn>
   ) : (
     <CheckEnableScreen
+      setPosition={setPosition}
       enableLocation={enableLocation}
       enableCamera={enableCamera}
       enableClient={enableClient}

@@ -11,8 +11,9 @@ const ViewModal = styled.View`
   background-color: ${Color.white};
   border-radius: 10px;
   overflow: hidden;
+  padding-bottom: 12px;
 `;
-const View = styled.View`
+const View = styled.ScrollView`
   width: 100%;
   padding-left: 12px;
   padding-right: 12px;
@@ -21,8 +22,8 @@ const View = styled.View`
 const ViewItem = styled.View`
   width: 100%;
   height: 44px;
-  margin-bottom: 12px;
   padding-bottom: 12px;
+  padding-top: 12px;
   justify-content: center;
   border-bottom: ${Color.gray_border};
   border-bottom-width: 0.5px;
@@ -43,7 +44,6 @@ const Day = styled.View`
   width: 100%;
   justify-content: center;
   background-color: ${Color.background_color};
-  margin-bottom: 12px;
 `;
 
 const TextDay = styled.Text`
@@ -75,12 +75,10 @@ export const ModalLogs = ({log, name, modal, day, onBackdropPress}: props) => {
         justifyContent: 'flex-end',
       }}>
       <ViewModal>
-        <ScrollView>
-          <Day>
-            <TextDay>{text}</TextDay>
-          </Day>
-          <Items log={log} name={name} />
-        </ScrollView>
+        <Day>
+          <TextDay>{text}</TextDay>
+        </Day>
+        <Items log={log} name={name} />
       </ViewModal>
     </Modal>
   );

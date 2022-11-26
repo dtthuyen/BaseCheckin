@@ -7,11 +7,8 @@ import moment from 'moment';
 import {Calendar, LocaleConfig} from 'react-native-calendars/src';
 import {Fetch} from '../../utils/fetch';
 import {useAsyncFn} from '../../hooks/useAsyncFn';
-import {useUser} from '../../store/constant';
 import {DayForm} from './DayForm';
-import Modal from 'react-native-modal';
-import useBoolean from '../../hooks/useBoolean';
-import {ModalLogs} from './ModalLogs';
+import {useToggleCheckIn, useUser} from '../../store/constant';
 
 const Container = styled.View`
   flex: 1;
@@ -50,7 +47,7 @@ interface propsHeader {
   date: any;
 }
 
-const Header = memo(({date}: propsHeader) => {
+const Header = ({date}: propsHeader) => {
   const day = 'Ngày ' + moment(date).format('DD/MM/YYYY').toString();
   const CurrentDay = useMemo(() => {
     return <TextDayCurrent>{day}</TextDayCurrent>;
@@ -62,10 +59,13 @@ const Header = memo(({date}: propsHeader) => {
       <SubText>(Danh sách lịch sử chấm công)</SubText>
     </ViewDayCurrent>
   );
-});
+};
 
 export const HistoryScreen = () => {
   const user = useUser();
+  const check = useToggleCheckIn();
+
+  console.log(check);
   const [log, setLog] = useState({});
 
   const [{value, loading, error}, onGetHistory] = useAsyncFn(async () => {
@@ -74,7 +74,7 @@ export const HistoryScreen = () => {
       client_auth: 1,
       access_token: user.access_token,
       __code: user.__code,
-      client_id: user.mobile_clients['2'].id,
+      client_id: user.mobile_clients['1'].id,
       time_start: 1667236454,
       time_end: 1669828454,
     };
@@ -99,7 +99,7 @@ export const HistoryScreen = () => {
     onGetHistory().then(r => {
       if (r.code === 1) {
         let newLog = {
-          name: user.mobile_clients['2'].name,
+          name: user.mobile_clients['1'].name,
         };
         r.logs.forEach(item => {
           const item_logs = item.logs;
@@ -124,7 +124,7 @@ export const HistoryScreen = () => {
             let data = [
               {
                 time: moment(new Date(i.time * 1000))
-                  .format('DD/MM hh:mm:ss')
+                  .format('DD/MM HH:mm:ss')
                   .toString(),
                 IP: i.ip,
               },
@@ -143,9 +143,7 @@ export const HistoryScreen = () => {
         });
       }
     });
-  }, []);
-
-  console.log(log['10/11']);
+  }, [check]);
 
   return (
     <Container>
@@ -236,7 +234,7 @@ LocaleConfig.locales['vn'] = {
     'Thứ Bảy',
     'Chủ Nhật',
   ],
-  dayNamesShort: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+  dayNamesShort: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
   today: 'Hôm nay',
 };
 LocaleConfig.defaultLocale = 'vn';

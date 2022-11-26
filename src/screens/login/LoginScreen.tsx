@@ -135,19 +135,17 @@ const LoginScreen = () => {
     const temp = await Fetch.post('api.base.vn/ajax/mobile/login', form);
 
     if (temp.data.code === 1) {
-      const props = {
+      const params = {
         ...formData,
         access_token: temp.data.client.access_token,
         isLogin: true,
       };
-      setUserAction(props);
+      setUserAction(params);
       navigateToMainScreen();
     }
 
     return temp.data;
   }, []);
-
-  const user = useUser();
 
   return (
     <Container>

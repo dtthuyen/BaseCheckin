@@ -21,7 +21,7 @@ export const newFormData = (payload: {[key: string]: any}) => {
 export const format_HH_MM = date => {
   if (date)
     return moment(new Date(date * 1000))
-      .format('hh:mm')
+      .format('HH:mm')
       .toString();
   return '';
 };
@@ -29,7 +29,7 @@ export const format_HH_MM = date => {
 export const format_DMY = date => {
   if (date)
     return moment(new Date(date * 1000))
-      .format('DD-MM-YYYY')
+      .format('YYYY-MM-DD')
       .toString();
   return '1970-01-01';
 };

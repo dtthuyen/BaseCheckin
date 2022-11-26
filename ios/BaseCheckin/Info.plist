@@ -4,6 +4,8 @@
 <dict>
     <key>NSCameraUsageDescription</key>
     <string>Base Checkin would like to access camera</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string></string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>NSLocationAlwaysAndWhenInUseUsageDescription</string>
     <key>NSLocationAlwaysUsageDescription</key>

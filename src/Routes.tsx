@@ -12,7 +12,6 @@ import {
 import {HomeScreen} from './screens/HomeScreen';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {HistoryScreen} from './screens/history/HistoryScreen';
-// import {CheckinScreen} from './screens/checkin/CheckinScreen';
 const CheckinScreen = React.lazy(
   () => import('./screens/checkin/CheckinScreen'),
 );
@@ -20,10 +19,7 @@ import {Color} from './themes/Color';
 import {BaseStyles} from './themes/BaseStyle';
 import styled from 'styled-components';
 import {TouchableOpacity, View} from 'react-native';
-import {Fetch} from './utils/fetch';
-import {resetUser, setUserAction, useUser} from './store/constant';
-import {useAsyncFn} from './hooks/useAsyncFn';
-import {StackActions} from 'react-navigation';
+import {resetUser} from './store/constant';
 
 export const RootStack = createStackNavigator();
 export const ModalStack = createStackNavigator();
@@ -38,8 +34,9 @@ const Header = styled.View`
   width: 100%;
   background-color: ${Color.background_color};
   align-items: center;
-  justify-content: center;
   padding-bottom: 15px;
+  flex-direction: row;
+  justify-content: center;
 `;
 
 const Text = styled.Text`
@@ -49,7 +46,7 @@ const Text = styled.Text`
 `;
 
 const MyTabs = () => {
-  const onPress = useCallback(() => {
+  const out = useCallback(() => {
     resetUser();
     navigateToHomeScreen();
   }, []);
@@ -57,7 +54,7 @@ const MyTabs = () => {
   return (
     <Container>
       <Header style={BaseStyles().paddingTopInsets}>
-        <TouchableOpacity onPress={onPress}>
+        <TouchableOpacity onPress={out}>
           <Text>Checkin</Text>
         </TouchableOpacity>
       </Header>

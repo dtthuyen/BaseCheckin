@@ -26,8 +26,8 @@ export const DayForm = ({
   const timeIn = new Date(format_DMY(log?.checkin) + 'T' + '08:30').getTime();
   const timeOut = new Date(format_DMY(log?.checkout) + 'T' + '17:30').getTime();
 
-  const _in = log?.checkin;
-  const _out = log?.checkout;
+  const _in = log?.checkin * 1000;
+  const _out = log?.checkout * 1000;
 
   const colorIn = timeIn > _in ? Color.green : Color.red;
   const colorOut = timeOut < _out ? Color.green : Color.red;
