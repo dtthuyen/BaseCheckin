@@ -4,6 +4,7 @@ import {useCallback} from 'react';
 import {ModalLogs} from './ModalLogs';
 import useBoolean from '../../hooks/useBoolean';
 import {format_DMY, format_HH_MM} from '../../utils/func';
+// @ts-ignore
 import moment from 'moment';
 
 interface propsDayComponent {
@@ -25,11 +26,13 @@ export const DayForm = ({
   const cin = format_HH_MM(log?.checkin);
   const cout = format_HH_MM(log?.checkout);
 
-  const timeInM = new Date(format_DMY(log?.checkin) + 'T' + '08:30').getTime();
-  const timeOutM = new Date(format_DMY(log?.checkin) + 'T' + '12:00').getTime();
-  const timeInA = new Date(format_DMY(log?.checkin) + 'T' + '13:00').getTime();
+  const timeInM = new Date(format_DMY(log?.checkin) + 'T08:30+07:00').getTime();
+  const timeOutM = new Date(
+    format_DMY(log?.checkin) + 'T12:00+07:00',
+  ).getTime();
+  const timeInA = new Date(format_DMY(log?.checkin) + 'T13:00+07:00').getTime();
   const timeOutA = new Date(
-    format_DMY(log?.checkout) + 'T' + '17:30',
+    format_DMY(log?.checkout) + 'T17:30+07:00',
   ).getTime();
 
   const _in = log?.checkin * 1000;

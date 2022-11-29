@@ -16,15 +16,13 @@ const {actions, reducer} = createSlice({
     setClients: (state, action: PayloadAction<any>) => {
       return {
         ...state,
-        mobile_clients: [
-          ...action.payload,
-      ],
+        mobile_clients: [...action.payload],
       };
     },
-    setToggleCheckin: (state, action: PayloadAction<boolean>) => {
+    setLogs: (state, action: PayloadAction<any>) => {
       return {
         ...state,
-        toggleCheckin: action.payload,
+        logs: action.payload,
       };
     },
     reset: () => {
@@ -56,8 +54,8 @@ export const setClientsAction = (data: any) => {
   return _getStore().dispatch(actions.setClients(data));
 };
 
-export const setToggleCheckin = (data: any) => {
-  return _getStore().dispatch(actions.setToggleCheckin(data));
+export const setLogs = (data: any) => {
+  return _getStore().dispatch(actions.setLogs(data));
 };
 
 export const resetUser = () => {
@@ -68,12 +66,12 @@ export const useUser = () => {
   return useSelector(state => state['constant'].user) || {};
 };
 
-export const useToggleCheckIn = () => {
-  return useSelector(state => state['constant'].user?.toggleCheckin) || false;
+export const useLogs = () => {
+  return useSelector(state => state['constant'].user?.logs) || {};
 };
 
 export const useClients = () => {
-  return useSelector(state => state['constant'].user?.mobile_clients) || {};
+  return useSelector(state => state['constant'].user?.mobile_clients) || [];
 };
 
 export const constantReducer = combineReducers({

@@ -1,14 +1,13 @@
 import styled from 'styled-components';
 import {Color} from '../../themes/Color';
 import {IC_NEXT, IC_PREVIOUS} from '../../assets';
-import {memo, useCallback, useEffect, useMemo, useState} from 'react';
+import {memo, useCallback, useEffect, useMemo} from 'react';
 // @ts-ignore
 import moment from 'moment';
 import {Calendar, LocaleConfig} from 'react-native-calendars/src';
-import {Fetch} from '../../utils/fetch';
-import {useAsyncFn} from '../../hooks/useAsyncFn';
 import {DayForm} from './DayForm';
-import {useToggleCheckIn, useUser} from '../../store/constant';
+import {useClients, useLogs, useUser} from '../../store/constant';
+import {handleSetLogs} from '../../utils/func';
 
 const Container = styled.View`
   flex: 1;
@@ -62,32 +61,9 @@ const Header = ({date}: propsHeader) => {
 };
 
 export const HistoryScreen = () => {
+  const log = useLogs();
   const user = useUser();
-  const check = useToggleCheckIn();
-
-  console.log(check);
-  const [log, setLog] = useState({});
-
-  const [{value, loading, error}, onGetHistory] = useAsyncFn(async () => {
-    const formData = {
-      client_key: user.client_key,
-      client_auth: 1,
-      access_token: user.access_token,
-      __code: user.__code,
-      client_id: user.mobile_clients[1].id,
-      time_start: 1667236454,
-      time_end: 1669828454,
-    };
-
-    const form = new FormData();
-
-    for (let key in formData) {
-      form.append(key, formData[key]);
-    }
-    const {data} = await Fetch.post('checkin.base.vn/ajax/api/me/logs', form);
-
-    return data;
-  }, []);
+  const clients = useClients();
 
   const dateDay = useCallback(date => {
     return (
@@ -96,56 +72,11 @@ export const HistoryScreen = () => {
   }, []);
 
   useEffect(() => {
-    onGetHistory().then(r => {
-      if (r.code === 1) {
-        let newLog = {
-          name: user.mobile_clients[1].name,
-        };
-        r.logs.forEach(item => {
-          const item_logs = item.logs;
-          const _day = moment(new Date(item.date * 1000))
-            .format('DD/MM')
-            .toString();
-          let len = item_logs.length;
-          const _in = item_logs[0].time;
-          len--;
-          const _out = len > 0 ? item_logs[len].time : '--:--';
-          const temp = {
-            [_day]: {
-              checkin: _in,
-              checkout: _out,
-            },
-          };
-
-          newLog = {...newLog, ...temp};
-
-          let logs = [];
-          item.logs.forEach(i => {
-            let data = [
-              {
-                time: moment(new Date(i.time * 1000))
-                  .format('DD/MM HH:mm:ss')
-                  .toString(),
-                IP: i.ip,
-              },
-            ];
-            logs = [...logs, ...data];
-          });
-
-          newLog = {
-            ...newLog,
-            [_day]: {
-              ...newLog[_day],
-              ...{logs},
-            },
-          };
-          setLog(newLog);
-        });
-      }
-    });
-  }, [check]);
-
-  console.log(user.mobile_clients);
+    if (clients.length) {
+      const id = user.mobile_clients[1]?.id;
+      handleSetLogs(user, id).then(r => {});
+    }
+  }, []);
 
   return (
     <Container>

@@ -21,7 +21,6 @@ const View = styled.ScrollView`
 
 const ViewItem = styled.View`
   width: 100%;
-  height: 44px;
   padding-bottom: 12px;
   padding-top: 12px;
   justify-content: center;
@@ -30,7 +29,8 @@ const ViewItem = styled.View`
 `;
 const TextLog = styled.Text`
   font-weight: 600;
-  font-size: 11px;
+  font-size: 12px;
+  color: ${Color.black2};
 `;
 
 const TextIP = styled.Text`

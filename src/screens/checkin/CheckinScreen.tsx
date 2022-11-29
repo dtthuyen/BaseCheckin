@@ -9,23 +9,17 @@ import MapView, {
 // @ts-ignore
 import moment from 'moment';
 import {CheckEnableScreen} from './CheckEnableScreen';
-import {setToggleCheckin, useUser} from '../../store/constant';
+import {setLogs, useUser} from '../../store/constant';
 import {Fetch} from '../../utils/fetch';
 import {useAsyncFn} from '../../hooks/useAsyncFn';
 import {RNCamera} from 'react-native-camera';
-import {newFormData} from '../../utils/func';
+import {handleSetLogs, newFormData} from '../../utils/func';
 import {ActivityIndicator, Alert} from 'react-native';
+import {TimeRun} from '../login/TimeRun';
 
 const CheckinScreen = () => {
   let camera: any;
   const user = useUser();
-
-  const toggleCheck = user.toggleCheckin ?? false;
-  const [check, setCheck] = useState(toggleCheck);
-
-  useEffect(() => {
-    setToggleCheckin(check);
-  }, [check]);
 
   const [enableClient, setEnableClient, setDisableClient] = useBoolean(false);
   const [enableCamera, setEnableCamera, setDisableCamera] = useBoolean(false);
@@ -36,17 +30,6 @@ const CheckinScreen = () => {
   const day = moment(now).format('dddd, DD/MM/YYYY').toString();
   const Day = useMemo(() => <TextDay>{day}</TextDay>, [day]);
 
-  const [time, setTime] = useState();
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const date = new Date();
-      setTime(moment(date).format('HH:mm:ss').toString());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const Time = useMemo(() => <TextTime>{time}</TextTime>, [time]);
   const CameraCheckIn = useMemo(() => {
     return (
       <RNCamera
@@ -54,6 +37,7 @@ const CheckinScreen = () => {
         style={style.styleView}
         type={RNCamera.Constants.Type.front}
         flashMode={RNCamera.Constants.FlashMode.on}
+        captureAudio={false}
         androidCameraPermissionOptions={{
           title: 'Permission to use camera',
           message: 'We need your permission to use your camera',
@@ -74,7 +58,9 @@ const CheckinScreen = () => {
   }, []);
 
   const [{value, loading, error}, onCheckIn] = useAsyncFn(async () => {
+    console.log('checkin screens - mobile_clients: ', user.mobile_clients);
     const {uri} = await camera.takePictureAsync();
+    camera.pausePreview();
     const id = user.mobile_clients[1].id;
 
     const form = newFormData({
@@ -94,42 +80,39 @@ const CheckinScreen = () => {
       form,
     );
 
+    if (data.code === 0) camera.resumePreview();
+
     if (data.code === 1) {
-      setCheck(!check);
+      await handleSetLogs(user, id);
+      camera.resumePreview();
       Alert.alert('Bạn đã check in');
     }
-
     return data;
   });
-
-  const onPressCheckin = useCallback(() => {
-    onCheckIn().then(r => {
-      if (r.code === 1) {
-        setCheck(!check);
-        Alert.alert('Bạn đã check in');
-      }
-    });
-  }, []);
 
   const [position, setPosition] = useState({});
 
   enableLatestRenderer();
 
+  // useEffect(() => {
+  //   if (!loading) camera.resumePreview();
+  // }, [loading]);
+
   return enableLocation && enableCamera && enableClient ? (
     <ContainerCheckIn>
       {Day}
-      {Time}
+      <TimeRun />
       <ViewLocation>
         <MapView
           provider={PROVIDER_GOOGLE}
-          region={{
-            latitude: position['coords'].latitude || 112,
-            longitude: position['coords']?.longitude || 111,
+          // showsUserLocation={true}
+          style={style.styleView}
+          initialRegion={{
+            latitude: 37.78825,
+            longitude: -122.4324,
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
           }}
-          showsUserLocation={true}
-          style={style.styleView}
         />
       </ViewLocation>
 
@@ -175,13 +158,6 @@ const ContainerCheckIn = styled.View`
 const TextDay = styled.Text`
   color: ${Color.gray1};
   font-size: 20px;
-  font-weight: 500;
-`;
-
-const TextTime = styled.Text`
-  margin-top: 12px;
-  color: ${Color.background_color};
-  font-size: 40px;
   font-weight: 500;
 `;
 

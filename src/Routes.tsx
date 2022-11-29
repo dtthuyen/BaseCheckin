@@ -8,6 +8,7 @@ import {
   navigateToHomeScreen,
   navigateToMainScreen,
   navigationRef,
+  replaceWithHomeScreen,
 } from './utils/navigation';
 import {HomeScreen} from './screens/HomeScreen';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
@@ -18,8 +19,12 @@ const CheckinScreen = React.lazy(
 import {Color} from './themes/Color';
 import {BaseStyles} from './themes/BaseStyle';
 import styled from 'styled-components';
-import {TouchableOpacity, View} from 'react-native';
-import {resetUser} from './store/constant';
+import {ActivityIndicator, TouchableOpacity, View} from 'react-native';
+import {resetUser, useUser} from './store/constant';
+import * as child_process from 'child_process';
+import {useAsyncFn} from './hooks/useAsyncFn';
+import {newFormData} from './utils/func';
+import {Fetch} from './utils/fetch';
 
 export const RootStack = createStackNavigator();
 export const ModalStack = createStackNavigator();
@@ -46,16 +51,45 @@ const Text = styled.Text`
 `;
 
 const MyTabs = () => {
-  const out = useCallback(() => {
+  const user = useUser();
+  const [{value, loading, error}, exit] = useAsyncFn(async () => {
+    const formData = newFormData({
+      access_token: user.access_token,
+      client_key: user.client_key,
+      client_auth: 1,
+      __code: user.__code,
+    });
+
+    const {data} = await Fetch.post(
+      'api.base.vn/extapi/oauth/logout',
+      formData,
+    );
+
+    if (data.code === 1) {
+      resetUser();
+      replaceWithHomeScreen();
+    }
+
+    return data;
+  });
+
+  console.log(value);
+  console.log(error);
+
+  const logout = useCallback(() => {
     resetUser();
-    navigateToHomeScreen();
+    replaceWithHomeScreen();
   }, []);
 
   return (
     <Container>
       <Header style={BaseStyles().paddingTopInsets}>
-        <TouchableOpacity onPress={out}>
-          <Text>Checkin</Text>
+        <TouchableOpacity onPress={exit}>
+          {loading ? (
+            <ActivityIndicator color={Color.green} />
+          ) : (
+            <Text>Checkin</Text>
+          )}
         </TouchableOpacity>
       </Header>
 

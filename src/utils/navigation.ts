@@ -33,6 +33,8 @@ export const toggleDrawer = () =>
 
 export const replaceWithMainScreen = createReplace('Main');
 
+export const replaceWithHomeScreen = createReplace('Home');
+
 export const navigateToLoginScreen = createNavigate('Login');
 
 export const navigateToMainScreen = createNavigate('Main');

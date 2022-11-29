@@ -3,7 +3,7 @@ import * as React from 'react';
 import useBoolean from '../../../hooks/useBoolean';
 import {Color} from '../../../themes/Color';
 import {useCallback, useEffect, useMemo} from 'react';
-import {TouchableOpacity} from 'react-native';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 const Container = styled.View`
@@ -53,6 +53,7 @@ interface props {
   subText?: string;
   onPress?: () => void;
   enable: boolean;
+  loading?: boolean;
 }
 
 export const Form = ({
@@ -61,8 +62,8 @@ export const Form = ({
   subText,
   onPress,
   enable,
+  loading,
 }: props) => {
-
   const TextActive = useMemo(() => {
     return enable ? 'Enable' : ' Disable';
   }, [enable]);
@@ -82,7 +83,11 @@ export const Form = ({
       </View>
 
       <TouchableOpacity onPress={onPressEnable}>
-        <Text isActive={enable}>{TextActive}</Text>
+        {loading ? (
+          <ActivityIndicator color={Color.gray_border} />
+        ) : (
+          <Text isActive={enable}>{TextActive}</Text>
+        )}
       </TouchableOpacity>
     </Container>
   );

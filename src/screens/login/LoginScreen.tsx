@@ -55,6 +55,7 @@ const InputView = styled.View`
   border-bottom-color: ${Color.gray_border};
   flex-direction: row;
   padding-bottom: 14px;
+  align-items: center;
 `;
 
 const IconInput = styled.Image`
