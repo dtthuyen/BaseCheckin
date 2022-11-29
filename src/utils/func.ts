@@ -5,6 +5,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {Platform} from 'react-native';
 import {Fetch} from './fetch';
 import {setClientsAction, setLogs} from '../store/constant';
+import {MOBILE_CLIENTS_URL, HISTORY_CHECKIN_URL} from './type';
 
 export const newFormData = (payload: {[key: string]: any}) => {
   const _formData = new FormData();
@@ -144,8 +145,11 @@ export const handleGetClients = async user => {
     __code: user.__code,
   });
 
-  const {data} = await Fetch.post('checkin.base.vn/ajax/api/me/clients', form);
+  const {data} = await Fetch.post(MOBILE_CLIENTS_URL, form);
 
+  if (data.code === 1) {
+    await setClientsAction(data.mobile_clients);
+  }
   return data;
 };
 
@@ -161,13 +165,13 @@ export const handleSetLogs = async (user, id) => {
     time_end: 1669828454,
   });
 
-  const temp = await Fetch.post('checkin.base.vn/ajax/api/me/logs', formData);
-  const r = temp.data;
-  if (r.code === 1) {
+  const {data} = await Fetch.post(HISTORY_CHECKIN_URL, formData);
+
+  if (data.code === 1) {
     let newLog = {
       name: user.mobile_clients[1].name,
     };
-    r.logs.forEach(item => {
+    data.logs.forEach(item => {
       const item_logs = item.logs;
       const _day = moment(new Date(item.date * 1000))
         .format('DD/MM')
@@ -208,4 +212,6 @@ export const handleSetLogs = async (user, id) => {
       setLogs(newLog);
     });
   }
+
+  return data;
 };

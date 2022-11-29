@@ -1,9 +1,9 @@
-import { memo, useEffect, useMemo, useState } from "react";
-import { Color } from "../../themes/Color";
-import styled from "styled-components";
+import {memo, useEffect, useMemo, useState} from 'react';
+import {Color} from '../../../themes/Color';
+import styled from 'styled-components';
 // @ts-ignore
-import moment from "moment/moment";
-import { View } from "react-native";
+import moment from 'moment/moment';
+import {View} from 'react-native';
 
 const TextTime = styled.Text`
   margin-top: 12px;
@@ -23,12 +23,7 @@ export const TimeRun = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const Time = useMemo(() => <TextTime>{time}</TextTime>, [time])
+  const Time = useMemo(() => <TextTime>{time}</TextTime>, [time]);
 
-  return (
-    <View>
-      {Time}
-    </View>
-
-  )
+  return <View>{Time}</View>;
 };

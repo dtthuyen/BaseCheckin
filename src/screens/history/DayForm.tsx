@@ -1,11 +1,12 @@
 import {Color} from '../../themes/Color';
 import styled from 'styled-components';
 import {useCallback} from 'react';
-import {ModalLogs} from './ModalLogs';
+const ModalLogs = React.lazy(() => import('./ModalLogs'));
 import useBoolean from '../../hooks/useBoolean';
 import {format_DMY, format_HH_MM} from '../../utils/func';
 // @ts-ignore
 import moment from 'moment';
+import * as React from 'react';
 
 interface propsDayComponent {
   state: any;

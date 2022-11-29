@@ -5,9 +5,10 @@ import {Color} from '../../themes/Color';
 import {useAsyncFn} from '../../hooks/useAsyncFn';
 import {Fetch} from '../../utils/fetch';
 import {IC_APP, IC_LOCK, IC_MAIL, IMAGE_BGR_LOGIN} from '../../assets';
-import {LoginParams} from '../../utils/type';
-import {setUserAction, useUser} from '../../store/constant';
-import {navigateToMainScreen, navigationRef} from '../../utils/navigation';
+import {GET_SECRET_KEY_URL, LOGIN_URL, LoginParams} from '../../utils/type';
+import {setUserAction} from '../../store/constant';
+import {navigateToMainScreen} from '../../utils/navigation';
+import {handleGetClients, newFormData} from '../../utils/func';
 
 const Container = styled.View`
   flex: 1;
@@ -102,8 +103,6 @@ const LoginScreen = () => {
   const [params, setParams] = useState<LoginParams>({
     username: 'hien2@yopmail.com',
     password: 'hien123456',
-    // username: '',
-    // password: '',
   });
 
   const onTextChange = useCallback(
@@ -117,7 +116,7 @@ const LoginScreen = () => {
   );
 
   const [{value, loading, error}, onLogin] = useAsyncFn(async () => {
-    const {data} = await Fetch.get('api.base.vn/extapi/oauth/client');
+    const {data} = await Fetch.get(GET_SECRET_KEY_URL);
 
     const formData = {
       client_key: data['client'].client_key,
@@ -127,13 +126,9 @@ const LoginScreen = () => {
       __code: 'native',
     };
 
-    const form = new FormData();
+    const form = newFormData(formData);
 
-    for (let key in formData) {
-      form.append(key, formData[key]);
-    }
-
-    const temp = await Fetch.post('api.base.vn/ajax/mobile/login', form);
+    const temp = await Fetch.post(LOGIN_URL, form);
 
     if (temp.data.code === 1) {
       const params = {
@@ -142,6 +137,8 @@ const LoginScreen = () => {
         isLogin: true,
       };
       setUserAction(params);
+      const _clients = await handleGetClients(params);
+      console.log('login handleGetClients', _clients);
       navigateToMainScreen();
     }
 
@@ -193,4 +190,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default memo(LoginScreen);

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import {Color} from '../../themes/Color';
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {useMemo, useState} from 'react';
 import useBoolean from '../../hooks/useBoolean';
 import MapView, {
   enableLatestRenderer,
@@ -9,13 +9,14 @@ import MapView, {
 // @ts-ignore
 import moment from 'moment';
 import {CheckEnableScreen} from './CheckEnableScreen';
-import {setLogs, useUser} from '../../store/constant';
+import {useUser} from '../../store/constant';
 import {Fetch} from '../../utils/fetch';
 import {useAsyncFn} from '../../hooks/useAsyncFn';
 import {RNCamera} from 'react-native-camera';
 import {handleSetLogs, newFormData} from '../../utils/func';
 import {ActivityIndicator, Alert} from 'react-native';
-import {TimeRun} from '../login/TimeRun';
+import {TimeRun} from './component/TimeRun';
+import {CHECKIN_URL} from '../../utils/type';
 
 const CheckinScreen = () => {
   let camera: any;
@@ -58,7 +59,6 @@ const CheckinScreen = () => {
   }, []);
 
   const [{value, loading, error}, onCheckIn] = useAsyncFn(async () => {
-    console.log('checkin screens - mobile_clients: ', user.mobile_clients);
     const {uri} = await camera.takePictureAsync();
     camera.pausePreview();
     const id = user.mobile_clients[1].id;
@@ -75,15 +75,12 @@ const CheckinScreen = () => {
       photo: uri,
     });
 
-    const {data} = await Fetch.post(
-      'checkin.base.vn/ajax/api/me/checkin/mobile',
-      form,
-    );
+    const {data} = await Fetch.post(CHECKIN_URL, form);
 
     if (data.code === 0) camera.resumePreview();
 
     if (data.code === 1) {
-      await handleSetLogs(user, id);
+      const _log = await handleSetLogs(user, id);
       camera.resumePreview();
       Alert.alert('Bạn đã check in');
     }
@@ -94,10 +91,6 @@ const CheckinScreen = () => {
 
   enableLatestRenderer();
 
-  // useEffect(() => {
-  //   if (!loading) camera.resumePreview();
-  // }, [loading]);
-
   return enableLocation && enableCamera && enableClient ? (
     <ContainerCheckIn>
       {Day}
@@ -105,14 +98,8 @@ const CheckinScreen = () => {
       <ViewLocation>
         <MapView
           provider={PROVIDER_GOOGLE}
-          // showsUserLocation={true}
           style={style.styleView}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
-          }}
+          initialRegion={style.region}
         />
       </ViewLocation>
 
@@ -210,9 +197,9 @@ const style = {
   styleView: {
     flex: 1,
   },
-  regionMapView: {
-    latitude: 37.78825,
-    longitude: -122.4324,
+  region: {
+    latitude: 20.9951616,
+    longitude: 105.8047451,
     latitudeDelta: 0.015,
     longitudeDelta: 0.0121,
   },

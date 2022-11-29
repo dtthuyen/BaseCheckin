@@ -1,9 +1,10 @@
 import Modal from 'react-native-modal';
 import styled from 'styled-components';
 import {Color} from '../../themes/Color';
-import {ScrollView} from 'react-native';
 // @ts-ignore
 import moment from 'moment';
+import {memo, useMemo} from 'react';
+import {StyleSheet} from 'react-native';
 
 const ViewModal = styled.View`
   width: 100%;
@@ -61,7 +62,7 @@ interface props {
   onBackdropPress?: any;
 }
 
-export const ModalLogs = ({log, name, modal, day, onBackdropPress}: props) => {
+const ModalLogs = ({log, name, modal, day, onBackdropPress}: props) => {
   const newDate = new Date(day.dateString);
 
   const text = moment(newDate).format('dddd, DD/MM/YYYY');
@@ -70,10 +71,7 @@ export const ModalLogs = ({log, name, modal, day, onBackdropPress}: props) => {
     <Modal
       isVisible={modal}
       onBackdropPress={onBackdropPress}
-      style={{
-        margin: 0,
-        justifyContent: 'flex-end',
-      }}>
+      style={styles.styleModal}>
       <ViewModal>
         <Day>
           <TextDay>{text}</TextDay>
@@ -96,3 +94,12 @@ const Items = ({log, name}: props) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  styleModal: {
+    margin: 0,
+    justifyContent: 'flex-end',
+  },
+});
+
+export default memo(ModalLogs);

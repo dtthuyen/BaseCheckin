@@ -3,13 +3,12 @@ import {Color} from '../themes/Color';
 import {IC_APP} from '../assets';
 import {
   navigateToLoginScreen,
-  navigateToMainScreen,
   replaceWithMainScreen,
 } from '../utils/navigation';
-import {ActivityIndicator} from 'react-native';
-import {useUser} from '../store/constant';
-import useBoolean from '../hooks/useBoolean';
-import {useCallback, useEffect} from 'react';
+import {setClientsAction, useUser} from '../store/constant';
+import {useEffect} from 'react';
+import {handleGetClients} from '../utils/func';
+import {useAsyncFn} from '../hooks/useAsyncFn';
 
 const Container = styled.View`
   flex: 1;
@@ -83,11 +82,17 @@ const Loading = styled.ActivityIndicator`
 
 export const HomeScreen = () => {
   const isLogin = useUser().isLogin || false;
+  const user = useUser();
+
+  const [{value, loading, error}, onGetClients] = useAsyncFn(async () => {
+    const data = await handleGetClients(user);
+    return data;
+  }, []);
 
   useEffect(() => {
     if (isLogin) {
-      // replaceWithMainScreen();
-      setTimeout(() => replaceWithMainScreen(), 2000);
+      onGetClients().then(r => {});
+      setTimeout(() => replaceWithMainScreen(), 1000);
     }
   }, [isLogin]);
 
@@ -100,7 +105,7 @@ export const HomeScreen = () => {
       <SectionTitle>
         <Title>Base Me</Title>
         <SubTitle>{`Giải pháp quản lý thông tin nhân sự\ncho doanh nghiệp 4.0`}</SubTitle>
-        {isLogin ? <Loading /> : null}
+        {loading ? <Loading /> : null}
       </SectionTitle>
 
       {!isLogin ? (

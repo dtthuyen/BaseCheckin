@@ -1,5 +1,4 @@
 import {setClientsAction, useClients, useUser} from '../../store/constant';
-import {Fetch} from '../../utils/fetch';
 import {memo, useCallback, useEffect, useState} from 'react';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {Platform} from 'react-native';
@@ -139,7 +138,7 @@ export const CheckEnableScreen = memo(
           }
         })
         .catch(error => {
-          console.log('error', error);
+          console.log('onPressLocation error', error);
         });
     }, []);
 

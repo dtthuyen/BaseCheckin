@@ -2,14 +2,8 @@ import * as React from 'react';
 import {memo, useCallback, Suspense} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
-// import {LoginScreen} from './screens/login/LoginScreen';
 const LoginScreen = React.lazy(() => import('./screens/login/LoginScreen'));
-import {
-  navigateToHomeScreen,
-  navigateToMainScreen,
-  navigationRef,
-  replaceWithHomeScreen,
-} from './utils/navigation';
+import {navigationRef, replaceWithHomeScreen} from './utils/navigation';
 import {HomeScreen} from './screens/HomeScreen';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {HistoryScreen} from './screens/history/HistoryScreen';
@@ -21,10 +15,10 @@ import {BaseStyles} from './themes/BaseStyle';
 import styled from 'styled-components';
 import {ActivityIndicator, TouchableOpacity, View} from 'react-native';
 import {resetUser, useUser} from './store/constant';
-import * as child_process from 'child_process';
 import {useAsyncFn} from './hooks/useAsyncFn';
 import {newFormData} from './utils/func';
 import {Fetch} from './utils/fetch';
+import {LOGOUT_URL} from './utils/type';
 
 export const RootStack = createStackNavigator();
 export const ModalStack = createStackNavigator();
@@ -60,21 +54,16 @@ const MyTabs = () => {
       __code: user.__code,
     });
 
-    const {data} = await Fetch.post(
-      'api.base.vn/extapi/oauth/logout',
-      formData,
-    );
+    const {data} = await Fetch.post(LOGOUT_URL, formData);
 
     if (data.code === 1) {
       resetUser();
-      replaceWithHomeScreen();
+      setTimeout(() => replaceWithHomeScreen(), 1000);
+      // replaceWithHomeScreen();
     }
 
     return data;
   });
-
-  console.log(value);
-  console.log(error);
 
   const logout = useCallback(() => {
     resetUser();
@@ -84,7 +73,7 @@ const MyTabs = () => {
   return (
     <Container>
       <Header style={BaseStyles().paddingTopInsets}>
-        <TouchableOpacity onPress={exit}>
+        <TouchableOpacity onPress={logout}>
           {loading ? (
             <ActivityIndicator color={Color.green} />
           ) : (

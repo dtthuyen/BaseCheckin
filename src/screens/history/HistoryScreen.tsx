@@ -8,6 +8,9 @@ import {Calendar, LocaleConfig} from 'react-native-calendars/src';
 import {DayForm} from './DayForm';
 import {useClients, useLogs, useUser} from '../../store/constant';
 import {handleSetLogs} from '../../utils/func';
+import {Header} from './Header';
+import {useAsyncFn} from '../../hooks/useAsyncFn';
+import {ActivityIndicator} from 'react-native';
 
 const Container = styled.View`
   flex: 1;
@@ -16,49 +19,16 @@ const Container = styled.View`
   border-top-width: 8px;
 `;
 
-const Icon = styled.Image`
+const IconArrow = styled.Image`
   width: 24px;
   height: 24px;
 `;
 
-const ViewDayCurrent = styled.View`
-  flex-direction: column;
-  justify-content: center;
+const View = styled.View`
+  flex: 1;
   align-items: center;
-  height: 64px;
+  justify-content: center;
 `;
-
-const TextDayCurrent = styled.Text`
-  font-size: 18px;
-  color: ${Color.black2};
-  font-weight: 500;
-  line-height: 22px;
-`;
-
-const SubText = styled.Text`
-  font-size: 13px;
-  color: ${Color.gray3};
-  line-height: 18px;
-  margin-top: 4px;
-`;
-
-interface propsHeader {
-  date: any;
-}
-
-const Header = ({date}: propsHeader) => {
-  const day = 'Ngày ' + moment(date).format('DD/MM/YYYY').toString();
-  const CurrentDay = useMemo(() => {
-    return <TextDayCurrent>{day}</TextDayCurrent>;
-  }, [day]);
-
-  return (
-    <ViewDayCurrent>
-      {CurrentDay}
-      <SubText>(Danh sách lịch sử chấm công)</SubText>
-    </ViewDayCurrent>
-  );
-};
 
 export const HistoryScreen = () => {
   const log = useLogs();
@@ -71,60 +41,69 @@ export const HistoryScreen = () => {
     );
   }, []);
 
+  const [{value, loading, error}, getLogs] = useAsyncFn(() => {
+    const id = clients[1]?.id;
+    const _log = handleSetLogs(user, id);
+    return _log;
+  }, []);
+
   useEffect(() => {
-    if (clients.length) {
-      const id = user.mobile_clients[1]?.id;
-      handleSetLogs(user, id).then(r => {});
-    }
+    if (clients.length) getLogs().then(r => {});
   }, []);
 
   return (
     <Container>
-      <Calendar
-        style={{
-          paddingLeft: 0,
-          paddingRight: 0,
-        }}
-        theme={{
-          textSectionTitleColor: Color.black1,
-          weekVerticalMargin: 0,
-          'stylesheet.calendar.header': {
-            week: {
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              backgroundColor: Color.gray6,
-              alignItems: 'center',
-              height: 44,
+      {loading ? (
+        <View>
+          <ActivityIndicator color={Color.green} />
+        </View>
+      ) : (
+        <Calendar
+          style={{
+            paddingLeft: 0,
+            paddingRight: 0,
+          }}
+          theme={{
+            textSectionTitleColor: Color.black1,
+            weekVerticalMargin: 0,
+            'stylesheet.calendar.header': {
+              week: {
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                backgroundColor: Color.gray6,
+                alignItems: 'center',
+                height: 44,
+              },
+              dayHeader: {
+                borderColor: Color.gray_border,
+                borderWidth: 0.5,
+                flex: 1,
+                height: '100%',
+                textAlign: 'center',
+                paddingTop: 14,
+              },
             },
-            dayHeader: {
-              borderColor: Color.gray_border,
-              borderWidth: 0.5,
-              flex: 1,
-              height: '100%',
-              textAlign: 'center',
-              paddingTop: 14,
-            },
-          },
-        }}
-        showSixWeeks={true}
-        renderHeader={date => <Header date={date} />}
-        renderArrow={direction =>
-          direction === 'left' ? (
-            <Icon source={IC_PREVIOUS} />
-          ) : (
-            <Icon source={IC_NEXT} />
-          )
-        }
-        dayComponent={({date, state}) => (
-          <DayForm
-            day={date}
-            date={dateDay(date)}
-            state={state}
-            log={log[dateDay(date)]}
-            nameOffice={log['name']}
-          />
-        )}
-      />
+          }}
+          showSixWeeks={true}
+          renderHeader={date => <Header date={date} />}
+          renderArrow={direction =>
+            direction === 'left' ? (
+              <IconArrow source={IC_PREVIOUS} />
+            ) : (
+              <IconArrow source={IC_NEXT} />
+            )
+          }
+          dayComponent={({date, state}) => (
+            <DayForm
+              day={date}
+              date={dateDay(date)}
+              state={state}
+              log={log[dateDay(date)]}
+              nameOffice={log['name']}
+            />
+          )}
+        />
+      )}
     </Container>
   );
 };

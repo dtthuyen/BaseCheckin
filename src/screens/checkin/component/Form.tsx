@@ -68,10 +68,6 @@ export const Form = ({
     return enable ? 'Enable' : ' Disable';
   }, [enable]);
 
-  const onPressEnable = useCallback(() => {
-    onPress();
-  }, []);
-
   return (
     <Container>
       <View>
@@ -82,7 +78,7 @@ export const Form = ({
         </TextView>
       </View>
 
-      <TouchableOpacity onPress={onPressEnable}>
+      <TouchableOpacity onPress={onPress}>
         {loading ? (
           <ActivityIndicator color={Color.gray_border} />
         ) : (
