@@ -17,6 +17,7 @@ import {handleSetLogs, newFormData} from '../../utils/func';
 import {ActivityIndicator, Alert} from 'react-native';
 import {TimeRun} from './component/TimeRun';
 import {CHECKIN_URL} from '../../utils/type';
+import 'moment/locale/vi';
 
 const CheckinScreen = () => {
   let camera: any;
@@ -27,9 +28,11 @@ const CheckinScreen = () => {
   const [enableLocation, setEnableLocation, setDisableLocation] =
     useBoolean(false);
 
-  const now = new Date();
-  const day = moment(now).format('dddd, DD/MM/YYYY').toString();
-  const Day = useMemo(() => <TextDay>{day}</TextDay>, [day]);
+  const day = moment().format('dddd, DD/MM/YYYY').toString();
+  const Day = useMemo(() => {
+    const _day = day.replace('thứ', 'Thứ');
+    return <TextDay>{_day}</TextDay>;
+  }, [day]);
 
   const CameraCheckIn = useMemo(() => {
     return (

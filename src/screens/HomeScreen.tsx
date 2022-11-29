@@ -5,7 +5,7 @@ import {
   navigateToLoginScreen,
   replaceWithMainScreen,
 } from '../utils/navigation';
-import {setClientsAction, useUser} from '../store/constant';
+import {useUser} from '../store/constant';
 import {useEffect} from 'react';
 import {handleGetClients} from '../utils/func';
 import {useAsyncFn} from '../hooks/useAsyncFn';
@@ -92,6 +92,7 @@ export const HomeScreen = () => {
   useEffect(() => {
     if (isLogin) {
       onGetClients().then(r => {});
+
       setTimeout(() => replaceWithMainScreen(), 1000);
     }
   }, [isLogin]);

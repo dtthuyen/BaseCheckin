@@ -64,7 +64,6 @@ export const CheckEnableScreen = memo(
     const [{value, loading, error}, onGetClients] = useAsyncFn(async () => {
       const data = await handleGetClients(user);
       if (data.code === 1) {
-        await setClientsAction(data.mobile_clients);
         setEnableClient();
       }
       return data;

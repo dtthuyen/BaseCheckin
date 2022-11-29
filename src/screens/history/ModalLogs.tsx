@@ -5,6 +5,7 @@ import {Color} from '../../themes/Color';
 import moment from 'moment';
 import {memo, useMemo} from 'react';
 import {StyleSheet} from 'react-native';
+import 'moment/locale/vi';
 
 const ViewModal = styled.View`
   width: 100%;
@@ -65,7 +66,10 @@ interface props {
 const ModalLogs = ({log, name, modal, day, onBackdropPress}: props) => {
   const newDate = new Date(day.dateString);
 
-  const text = moment(newDate).format('dddd, DD/MM/YYYY');
+  const text = moment(newDate)
+    .format('dddd, DD/MM/YYYY')
+    .toString()
+    .replace('thứ', 'Thứ');
 
   return (
     <Modal

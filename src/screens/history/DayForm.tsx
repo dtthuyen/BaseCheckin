@@ -69,7 +69,7 @@ export const DayForm = ({
         <View>
           <TextCheckin _color={colorIn}>{cin}</TextCheckin>
           <TextCheckout _color={colorOut}>
-            {cout === 'Invalid date' ? '--:--' : cout}
+            {cout.length && !cout.includes(':') ? '--:--' : cout}
           </TextCheckout>
         </View>
       )}
