@@ -128,7 +128,6 @@ export const CheckEnableScreen = memo(
 
     const [modal, openModal, closeModal] = useBoolean(false);
 
-    // const client = useClients();
     const client = getAllClients();
 
     console.log(client);

@@ -4,7 +4,7 @@ import {memo, useCallback, useEffect, useMemo, useState} from 'react';
 // @ts-ignore
 import moment from 'moment';
 import {Calendar, LocaleConfig} from 'react-native-calendars/src';
-import {useUser} from '../../store/constant';
+import {useAtIdClient, useUser} from '../../store/constant';
 import {handleSetLogs} from '../../utils/func';
 import {useAsyncFn} from '../../hooks/useAsyncFn';
 import {CalendarView} from './Calender';
@@ -20,9 +20,9 @@ const Container = styled.View`
 export const HistoryScreen = () => {
   const user = useUser();
   const clients = getAllClients();
+  const id = useAtIdClient();
 
   const [{value, loading, error}, getLogs] = useAsyncFn((start, end) => {
-    const id = clients[1]?.id;
     const _log = handleSetLogs(user, id, start, end);
     return _log;
   }, []);

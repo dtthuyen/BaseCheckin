@@ -4,11 +4,9 @@ import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Geolocation from '@react-native-community/geolocation';
 import {Platform} from 'react-native';
 import {Fetch} from './fetch';
-import {setClientsAction, setLogs} from '../store/constant';
+import {setLogs} from '../store/constant';
 import {MOBILE_CLIENTS_URL, HISTORY_CHECKIN_URL} from './type';
-import {setLogsAction} from '../store/logs';
-import { setQueriesClients, syncAllClients, syncClients } from "../store/clients";
-import {batch} from 'react-redux';
+import {syncAllClients} from '../store/clients';
 
 export const newFormData = (payload: {[key: string]: any}) => {
   const _formData = new FormData();
@@ -151,8 +149,8 @@ export const handleGetClients = async user => {
   const {data} = await Fetch.post(MOBILE_CLIENTS_URL, form);
 
   if (data.code === 1) {
-    await setClientsAction(data.mobile_clients);
-    await syncAllClients(data.mobile_clients);
+    const clients = data.mobile_clients;
+    await syncAllClients(clients);
   }
   return data;
 };

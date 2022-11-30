@@ -6,6 +6,7 @@ import {memo, useCallback, useMemo} from 'react';
 import {StyleSheet} from 'react-native';
 import 'moment/locale/vi';
 import {Color} from '../../../themes/Color';
+import { setAtIdClient } from "../../../store/constant";
 
 const ViewModal = styled.View`
   width: 100%;
@@ -89,6 +90,7 @@ const ModalClients = ({
 const Items = ({client, setID, closeModal, setEnableClient}: props) => {
   const onPress = useCallback(id => {
     setID(id);
+    setAtIdClient(id)
     closeModal();
     setEnableClient();
   }, []);
