@@ -3,6 +3,12 @@ export interface LoginParams {
   password: string;
 }
 
+export interface RawUser {}
+
+export interface RawLogs {}
+
+export interface RawClients {}
+
 export const GET_SECRET_KEY_URL = 'api.base.vn/extapi/oauth/client';
 export const LOGIN_URL = 'api.base.vn/ajax/mobile/login';
 export const MOBILE_CLIENTS_URL = 'checkin.base.vn/ajax/api/me/clients';

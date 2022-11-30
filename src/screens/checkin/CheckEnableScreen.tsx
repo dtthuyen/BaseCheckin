@@ -1,4 +1,3 @@
-import {setClientsAction, useClients, useUser} from '../../store/constant';
 import {memo, useCallback, useEffect, useState} from 'react';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {Platform} from 'react-native';
@@ -8,12 +7,10 @@ import {IC_CAMERA, IC_CHECKIN_HAND, IC_LOCATION} from '../../assets';
 import {Color} from '../../themes/Color';
 import styled from 'styled-components';
 import Geolocation from '@react-native-community/geolocation';
-import {
-  checkCamera,
-  checkLocation,
-  handleGetClients,
-  handleSetLogs,
-} from '../../utils/func';
+import {checkCamera, checkLocation, handleGetClients} from '../../utils/func';
+import useBoolean from '../../hooks/useBoolean';
+import ModalClient from './component/ModalClient';
+import {getAllClients} from '../../store/clients';
 
 const Container = styled.View`
   flex: 1;
@@ -44,6 +41,7 @@ interface props {
   setDisableLocation: any;
   setDisableClient: any;
   setPosition: any;
+  setID: any;
 }
 
 export const CheckEnableScreen = memo(
@@ -58,17 +56,8 @@ export const CheckEnableScreen = memo(
     setDisableLocation,
     setDisableClient,
     setPosition,
+    setID,
   }: props) => {
-    const user = useUser();
-
-    const [{value, loading, error}, onGetClients] = useAsyncFn(async () => {
-      const data = await handleGetClients(user);
-      if (data.code === 1) {
-        setEnableClient();
-      }
-      return data;
-    }, []);
-
     useEffect(() => {
       checkCamera(setEnableCamera, setDisableCamera);
       checkLocation(setEnableLocation, setDisableLocation, setPosition);
@@ -107,10 +96,6 @@ export const CheckEnableScreen = memo(
             ? PERMISSIONS.IOS.LOCATION_ALWAYS
             : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
           : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
-        // : Platform.Version >= 29
-        // ? PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
-        // : PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
-        // : PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION,
       )
         .then(r => {
           switch (r) {
@@ -141,6 +126,17 @@ export const CheckEnableScreen = memo(
         });
     }, []);
 
+    const [modal, openModal, closeModal] = useBoolean(false);
+
+    // const client = useClients();
+    const client = getAllClients();
+
+    console.log(client);
+
+    const onPressClients = useCallback(() => {
+      openModal();
+    }, []);
+
     return (
       <Container>
         <Text>
@@ -154,8 +150,7 @@ export const CheckEnableScreen = memo(
             text={'Checkin client'}
             subText={'Mobile checkin'}
             enable={enableClient}
-            onPress={onGetClients}
-            loading={loading}
+            onPress={onPressClients}
           />
           <Form
             source={IC_CAMERA}
@@ -170,6 +165,14 @@ export const CheckEnableScreen = memo(
             enable={enableLocation}
           />
         </View>
+
+        <ModalClient
+          client={client}
+          closeModal={closeModal}
+          modal={modal}
+          setID={setID}
+          setEnableClient={setEnableClient}
+        />
       </Container>
     );
   },

@@ -19,6 +19,8 @@ import {useAsyncFn} from './hooks/useAsyncFn';
 import {newFormData} from './utils/func';
 import {Fetch} from './utils/fetch';
 import {LOGOUT_URL} from './utils/type';
+import {resetLogs} from './store/logs';
+import {resetClients} from './store/clients';
 
 export const RootStack = createStackNavigator();
 export const ModalStack = createStackNavigator();
@@ -67,6 +69,8 @@ const MyTabs = () => {
 
   const logout = useCallback(() => {
     resetUser();
+    resetLogs();
+    resetClients();
     replaceWithHomeScreen();
   }, []);
 

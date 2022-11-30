@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import {Color} from '../../themes/Color';
-import {useMemo, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import useBoolean from '../../hooks/useBoolean';
 import MapView, {
   enableLatestRenderer,
@@ -22,6 +22,11 @@ import 'moment/locale/vi';
 const CheckinScreen = () => {
   let camera: any;
   const user = useUser();
+  const [id, setID] = useState<string>();
+
+  const _setID = useCallback((id: string) => {
+    setID(id);
+  }, []);
 
   const [enableClient, setEnableClient, setDisableClient] = useBoolean(false);
   const [enableCamera, setEnableCamera, setDisableCamera] = useBoolean(false);
@@ -64,7 +69,6 @@ const CheckinScreen = () => {
   const [{value, loading, error}, onCheckIn] = useAsyncFn(async () => {
     const {uri} = await camera.takePictureAsync();
     camera.pausePreview();
-    const id = user.mobile_clients[1].id;
 
     const form = newFormData({
       client_key: user.client_key,
@@ -83,7 +87,9 @@ const CheckinScreen = () => {
     if (data.code === 0) camera.resumePreview();
 
     if (data.code === 1) {
-      const _log = await handleSetLogs(user, id);
+      const start = moment().startOf('month').valueOf() / 1000;
+      const end = moment().endOf('month').valueOf() / 1000;
+      const _log = await handleSetLogs(user, id, start, end);
       camera.resumePreview();
       Alert.alert('Bạn đã check in');
     }
@@ -132,6 +138,7 @@ const CheckinScreen = () => {
       setDisableCamera={setDisableCamera}
       setDisableLocation={setDisableLocation}
       setDisableClient={setDisableClient}
+      setID={_setID}
     />
   );
 };

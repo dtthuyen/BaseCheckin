@@ -1,16 +1,14 @@
 import styled from 'styled-components';
 import {Color} from '../../themes/Color';
-import {IC_NEXT, IC_PREVIOUS} from '../../assets';
-import {memo, useCallback, useEffect, useMemo} from 'react';
+import {memo, useCallback, useEffect, useMemo, useState} from 'react';
 // @ts-ignore
 import moment from 'moment';
 import {Calendar, LocaleConfig} from 'react-native-calendars/src';
-import {DayForm} from './DayForm';
-import {useClients, useLogs, useUser} from '../../store/constant';
+import {useUser} from '../../store/constant';
 import {handleSetLogs} from '../../utils/func';
-import {Header} from './Header';
 import {useAsyncFn} from '../../hooks/useAsyncFn';
-import {ActivityIndicator} from 'react-native';
+import {CalendarView} from './Calender';
+import {getAllClients} from '../../store/clients';
 
 const Container = styled.View`
   flex: 1;
@@ -19,91 +17,59 @@ const Container = styled.View`
   border-top-width: 8px;
 `;
 
-const IconArrow = styled.Image`
-  width: 24px;
-  height: 24px;
-`;
-
-const View = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-`;
-
 export const HistoryScreen = () => {
-  const log = useLogs();
   const user = useUser();
-  const clients = useClients();
+  const clients = getAllClients();
 
-  const dateDay = useCallback(date => {
-    return (
-      `${date.day}`.padStart(2, '0') + '/' + `${date.month}`.padStart(2, '0')
-    );
-  }, []);
-
-  const [{value, loading, error}, getLogs] = useAsyncFn(() => {
+  const [{value, loading, error}, getLogs] = useAsyncFn((start, end) => {
     const id = clients[1]?.id;
-    const _log = handleSetLogs(user, id);
+    const _log = handleSetLogs(user, id, start, end);
     return _log;
   }, []);
 
   useEffect(() => {
-    if (clients.length) getLogs().then(r => {});
+    if (clients.length) {
+      let start = moment(new Date()).startOf('month').valueOf() / 1000;
+      let end = moment(new Date()).endOf('month').valueOf() / 1000;
+      getLogs(start, end).then(r => {});
+    }
+  }, []);
+
+  const pressLeft = useCallback((subtractMonth, date) => {
+    const start =
+      moment(new Date(date.getFullYear(), date.getMonth() - 1, 1))
+        .startOf('month')
+        .valueOf() / 1000;
+    const end =
+      moment(new Date(date.getFullYear(), date.getMonth() - 1, 1))
+        .endOf('month')
+        .valueOf() / 1000;
+    console.log(start, end);
+    getLogs(start, end).then(r => {});
+    subtractMonth();
+  }, []);
+
+  const pressRight = useCallback((addMonth, date) => {
+    const start =
+      moment(new Date(date.getFullYear(), date.getMonth() + 1, 1))
+        .startOf('month')
+        .valueOf() / 1000;
+    const end =
+      moment(new Date(date.getFullYear(), date.getMonth() + 1, 1))
+        .endOf('month')
+        .valueOf() / 1000;
+    console.log(start, end);
+    getLogs(start, end).then(r => {});
+    addMonth();
   }, []);
 
   return (
     <Container>
-      {loading ? (
-        <View>
-          <ActivityIndicator color={Color.green} />
-        </View>
-      ) : (
-        <Calendar
-          style={{
-            paddingLeft: 0,
-            paddingRight: 0,
-          }}
-          theme={{
-            textSectionTitleColor: Color.black1,
-            weekVerticalMargin: 0,
-            'stylesheet.calendar.header': {
-              week: {
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                backgroundColor: Color.gray6,
-                alignItems: 'center',
-                height: 44,
-              },
-              dayHeader: {
-                borderColor: Color.gray_border,
-                borderWidth: 0.5,
-                flex: 1,
-                height: '100%',
-                textAlign: 'center',
-                paddingTop: 14,
-              },
-            },
-          }}
-          showSixWeeks={true}
-          renderHeader={date => <Header date={date} />}
-          renderArrow={direction =>
-            direction === 'left' ? (
-              <IconArrow source={IC_PREVIOUS} />
-            ) : (
-              <IconArrow source={IC_NEXT} />
-            )
-          }
-          dayComponent={({date, state}) => (
-            <DayForm
-              day={date}
-              date={dateDay(date)}
-              state={state}
-              log={log[dateDay(date)]}
-              nameOffice={log['name']}
-            />
-          )}
-        />
-      )}
+      <CalendarView
+        pressLeft={pressLeft}
+        pressRight={pressRight}
+        loading={loading}
+      />
     </Container>
   );
 };

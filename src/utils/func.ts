@@ -6,6 +6,9 @@ import {Platform} from 'react-native';
 import {Fetch} from './fetch';
 import {setClientsAction, setLogs} from '../store/constant';
 import {MOBILE_CLIENTS_URL, HISTORY_CHECKIN_URL} from './type';
+import {setLogsAction} from '../store/logs';
+import { setQueriesClients, syncAllClients, syncClients } from "../store/clients";
+import {batch} from 'react-redux';
 
 export const newFormData = (payload: {[key: string]: any}) => {
   const _formData = new FormData();
@@ -149,23 +152,26 @@ export const handleGetClients = async user => {
 
   if (data.code === 1) {
     await setClientsAction(data.mobile_clients);
+    await syncAllClients(data.mobile_clients);
   }
   return data;
 };
 
-export const handleSetLogs = async (user, id) => {
-  console.log('handleSetLogs');
+export const handleSetLogs = async (user, id, timestart, timeend) => {
   const formData = newFormData({
     client_key: user.client_key,
     client_auth: 1,
     access_token: user.access_token,
     __code: user.__code,
     client_id: id,
-    time_start: 1667236454,
-    time_end: 1669828454,
+    time_start: timestart,
+    time_end: timeend,
   });
 
-  const {data} = await Fetch.post(HISTORY_CHECKIN_URL, formData);
+  const {data} = await Fetch.post(
+    HISTORY_CHECKIN_URL + '?time_start=' + timestart + '&time_end=' + timeend,
+    formData,
+  );
 
   if (data.code === 1) {
     let newLog = {
@@ -210,6 +216,7 @@ export const handleSetLogs = async (user, id) => {
         },
       };
       setLogs(newLog);
+      // setLogsAction(newLog)
     });
   }
 

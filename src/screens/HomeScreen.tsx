@@ -7,7 +7,6 @@ import {
 } from '../utils/navigation';
 import {useUser} from '../store/constant';
 import {useEffect} from 'react';
-import {handleGetClients} from '../utils/func';
 import {useAsyncFn} from '../hooks/useAsyncFn';
 
 const Container = styled.View`
@@ -82,17 +81,9 @@ const Loading = styled.ActivityIndicator`
 
 export const HomeScreen = () => {
   const isLogin = useUser().isLogin || false;
-  const user = useUser();
-
-  const [{value, loading, error}, onGetClients] = useAsyncFn(async () => {
-    const data = await handleGetClients(user);
-    return data;
-  }, []);
 
   useEffect(() => {
     if (isLogin) {
-      onGetClients().then(r => {});
-
       setTimeout(() => replaceWithMainScreen(), 1000);
     }
   }, [isLogin]);
@@ -106,7 +97,7 @@ export const HomeScreen = () => {
       <SectionTitle>
         <Title>Base Me</Title>
         <SubTitle>{`Giải pháp quản lý thông tin nhân sự\ncho doanh nghiệp 4.0`}</SubTitle>
-        {loading ? <Loading /> : null}
+        {isLogin ? <Loading /> : null}
       </SectionTitle>
 
       {!isLogin ? (

@@ -1,7 +1,8 @@
 import {createSlice, PayloadAction, Store} from '@reduxjs/toolkit';
 import {combineReducers} from 'redux';
 import {useSelector} from 'react-redux';
-interface RawUser {}
+import { RawUser } from "../../utils/type";
+
 const initialState: RawUser | null = null;
 
 const {actions, reducer} = createSlice({
@@ -11,12 +12,6 @@ const {actions, reducer} = createSlice({
     setUser: (state, action: PayloadAction<any>) => {
       return {
         ...action.payload,
-      };
-    },
-    setClients: (state, action: PayloadAction<any>) => {
-      return {
-        ...state,
-        mobile_clients: [...action.payload],
       };
     },
     setLogs: (state, action: PayloadAction<any>) => {
@@ -50,10 +45,6 @@ export const setUserAction = (data: RawUser | null) => {
   return _getStore().dispatch(actions.setUser(data));
 };
 
-export const setClientsAction = (data: any) => {
-  return _getStore().dispatch(actions.setClients(data));
-};
-
 export const setLogs = (data: any) => {
   return _getStore().dispatch(actions.setLogs(data));
 };
@@ -68,10 +59,6 @@ export const useUser = () => {
 
 export const useLogs = () => {
   return useSelector(state => state['constant'].user?.logs) || {};
-};
-
-export const useClients = () => {
-  return useSelector(state => state['constant'].user?.mobile_clients) || [];
 };
 
 export const constantReducer = combineReducers({

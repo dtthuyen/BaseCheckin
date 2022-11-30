@@ -6,7 +6,7 @@ import {useCallback, useEffect, useMemo} from 'react';
 import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
-const Container = styled.View`
+const Container = styled.TouchableOpacity`
   height: 64px;
   width: 100%;
   align-items: center;
@@ -56,20 +56,13 @@ interface props {
   loading?: boolean;
 }
 
-export const Form = ({
-  source,
-  text,
-  subText,
-  onPress,
-  enable,
-  loading,
-}: props) => {
+export const Form = ({source, text, subText, onPress, enable}: props) => {
   const TextActive = useMemo(() => {
     return enable ? 'Enable' : ' Disable';
   }, [enable]);
 
   return (
-    <Container>
+    <Container onPress={onPress}>
       <View>
         <Icon source={source} />
         <TextView>
@@ -77,14 +70,7 @@ export const Form = ({
           {subText ? <SubText>{subText}</SubText> : null}
         </TextView>
       </View>
-
-      <TouchableOpacity onPress={onPress}>
-        {loading ? (
-          <ActivityIndicator color={Color.gray_border} />
-        ) : (
-          <Text isActive={enable}>{TextActive}</Text>
-        )}
-      </TouchableOpacity>
+      <Text isActive={enable}>{TextActive}</Text>
     </Container>
   );
 };
