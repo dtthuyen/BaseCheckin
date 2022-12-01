@@ -128,11 +128,11 @@ export const CheckEnableScreen = memo(
 
     const [modal, openModal, closeModal] = useBoolean(false);
 
-    const client = getAllClients();
+    const client = getAllClients() || [];
 
-    const onPressClients = useCallback(() => {
-      openModal();
-    }, []);
+    // const onPressClients = useCallback(() => {
+    //   openModal();
+    // }, []);
 
     return (
       <Container>
@@ -147,7 +147,7 @@ export const CheckEnableScreen = memo(
             text={'Checkin client'}
             subText={'Mobile checkin'}
             enable={enableClient}
-            onPress={onPressClients}
+            onPress={openModal}
           />
           <Form
             source={IC_CAMERA}

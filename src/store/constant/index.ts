@@ -14,12 +14,6 @@ const {actions, reducer} = createSlice({
         ...action.payload,
       };
     },
-    setLogs: (state, action: PayloadAction<any>) => {
-      return {
-        ...state,
-        logs: action.payload,
-      };
-    },
     setIdClient: (state, action: PayloadAction<any>) => {
       return {
         ...state,
@@ -51,10 +45,6 @@ export const setUserAction = (data: RawUser | null) => {
   return _getStore().dispatch(actions.setUser(data));
 };
 
-export const setLogs = (data: any) => {
-  return _getStore().dispatch(actions.setLogs(data));
-};
-
 export const setAtIdClient = (data: any) => {
   return _getStore().dispatch(actions.setIdClient(data));
 };
@@ -65,10 +55,6 @@ export const resetUser = () => {
 
 export const useUser = () => {
   return useSelector(state => state['constant'].user) || {};
-};
-
-export const useLogs = () => {
-  return useSelector(state => state['constant'].user?.logs) || {};
 };
 
 export const useAtIdClient = () => {

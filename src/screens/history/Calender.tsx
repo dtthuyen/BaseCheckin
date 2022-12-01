@@ -2,19 +2,24 @@ import {Color} from '../../themes/Color';
 import {IC_NEXT, IC_PREVIOUS} from '../../assets';
 import {DayForm} from './DayForm';
 import {Calendar} from 'react-native-calendars';
-import {useLogs} from '../../store/constant';
+import {useAtIdClient} from '../../store/constant';
 import styled from 'styled-components';
-import {useCallback} from 'react';
-import {ActivityIndicator} from 'react-native';
+import {useCallback, useState} from 'react';
 import {Header} from './Header';
+import {useClientByKey} from '../../store/clients';
+import {useLogsByKey} from '../../store/logs';
 
 interface props {
   pressLeft: any;
   pressRight: any;
-  loading: boolean;
+  // setkey: any;
+  // _key: any;
 }
-export const CalendarView = ({pressLeft, pressRight, loading}: props) => {
-  const log = useLogs();
+export const CalendarView = ({pressLeft, pressRight}: props) => {
+  const [_key, setkey] = useState<string>();
+  const _log = useLogsByKey(_key);
+  const id = useAtIdClient();
+  const nameOffice = useClientByKey(id).name;
 
   const dateDay = useCallback(date => {
     return (
@@ -50,7 +55,7 @@ export const CalendarView = ({pressLeft, pressRight, loading}: props) => {
         },
       }}
       showSixWeeks={true}
-      renderHeader={date => <Header date={date} loading={loading} />}
+      renderHeader={date => <Header date={date} setkey={setkey} />}
       renderArrow={direction =>
         direction === 'left' ? (
           <IconArrow source={IC_PREVIOUS} />
@@ -67,8 +72,8 @@ export const CalendarView = ({pressLeft, pressRight, loading}: props) => {
           day={date}
           date={dateDay(date)}
           state={state}
-          log={log[dateDay(date)]}
-          nameOffice={log['name']}
+          log={_log[dateDay(date)]}
+          nameOffice={nameOffice}
         />
       )}
     />
@@ -79,4 +84,3 @@ const IconArrow = styled.Image`
   width: 24px;
   height: 24px;
 `;
-

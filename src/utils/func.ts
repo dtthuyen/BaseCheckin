@@ -4,9 +4,9 @@ import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Geolocation from '@react-native-community/geolocation';
 import {Platform} from 'react-native';
 import {Fetch} from './fetch';
-import {setLogs} from '../store/constant';
 import {MOBILE_CLIENTS_URL, HISTORY_CHECKIN_URL} from './type';
 import {syncAllClients, useClientByKey} from '../store/clients';
+import {syncAllLogs, useKeysByQueryLogs} from '../store/logs';
 
 export const newFormData = (payload: {[key: string]: any}) => {
   const _formData = new FormData();
@@ -155,8 +155,12 @@ export const handleGetClients = async user => {
   return data;
 };
 
-export const handleSetLogs = async (user, timestart, timeend, name) => {
+export const handleSetLogs = async (user, timestart, timeend, ids) => {
   console.log('handleSetLogs');
+
+  const id = moment(new Date(timeend * 1000))
+    .format('MM-YYYY')
+    .toString();
 
   const formData = newFormData({
     client_key: user.client_key,
@@ -174,49 +178,60 @@ export const handleSetLogs = async (user, timestart, timeend, name) => {
   );
 
   if (data.code === 1) {
-    let newLog = {
-      name: name,
-    };
+    let newLog = {};
 
     data.logs.forEach(item => {
       const item_logs = item.logs;
       const _day = moment(new Date(item.date * 1000))
         .format('DD/MM')
         .toString();
-      let len = item_logs.length;
-      const _in = item_logs[0].time;
-      len--;
-      const _out = len > 0 ? item_logs[len].time : '--:--';
-      const temp = {
-        [_day]: {
-          checkin: _in,
-          checkout: _out,
-        },
-      };
 
-      newLog = {...newLog, ...temp};
-
-      let logs = [];
-      item.logs.forEach(i => {
-        let datas = [
-          {
-            time: moment(new Date(i.time * 1000))
-              .format('DD/MM HH:mm:ss')
-              .toString(),
-            IP: i.ip,
+      if (item_logs.length) {
+        let len = item_logs.length;
+        const _in = item_logs[0].time;
+        len--;
+        const _out = len > 0 ? item_logs[len].time : '--:--';
+        const temp = {
+          [_day]: {
+            checkin: _in,
+            checkout: _out,
           },
-        ];
-        logs = [...logs, ...datas];
-      });
+        };
 
-      newLog = {
-        ...newLog,
-        [_day]: {
-          ...newLog[_day],
-          ...{logs},
-        },
-      };
-      setLogs(newLog);
+        newLog = {...newLog, ...temp};
+
+        let logs = [];
+
+        item.logs.forEach(i => {
+          let datas = [
+            {
+              time: moment(new Date(i.time * 1000))
+                .format('DD/MM HH:mm:ss')
+                .toString(),
+              IP: i.ip,
+            },
+          ];
+          logs = [...logs, ...datas];
+        });
+
+        newLog = {
+          ...newLog,
+          [_day]: {
+            ...newLog[_day],
+            ...{logs},
+          },
+        };
+      }
+
+      syncAllLogs(
+        [
+          {
+            id: id,
+            ...newLog,
+          },
+        ],
+        ids,
+      );
     });
   }
 

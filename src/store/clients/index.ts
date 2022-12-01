@@ -33,10 +33,11 @@ export const syncAllClients = (clients: RawClients[]) => {
 export const getAllClients = () => {
   const ids = useKeysByQueryClient('all');
   let clients: RawClients[] = [];
-  ids.forEach(item => {
-    const _client = useClientByKey(item);
-    clients.push(_client);
-  });
+  if (ids && ids.length)
+    ids.forEach(item => {
+      const _client = useClientByKey(item);
+      clients.push(_client);
+    });
 
   return clients;
 };

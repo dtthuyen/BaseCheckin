@@ -47,7 +47,7 @@ export const createDynamicReducer = <T extends {[x: string]: any}>(
 
   const useByKey = (key?: string): T | undefined => {
     // @ts-ignore
-    return useSelector(state => state[name].byKey[key]);
+    return useSelector(state => state[name].byKey[key]) || {};
   };
 
   const emptyArray: string[] = [];

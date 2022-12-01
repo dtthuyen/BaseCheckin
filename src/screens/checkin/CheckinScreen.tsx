@@ -19,6 +19,7 @@ import {TimeRun} from './component/TimeRun';
 import {CHECKIN_URL} from '../../utils/type';
 import 'moment/locale/vi';
 import {useClientByKey} from '../../store/clients';
+import {useKeysByQueryLogs} from '../../store/logs';
 
 const CheckinScreen = () => {
   let camera: any;
@@ -67,7 +68,7 @@ const CheckinScreen = () => {
     );
   }, []);
 
-  const name = useClientByKey(id)?.name;
+  const ids = useKeysByQueryLogs('all');
 
   const [{value, loading, error}, onCheckIn] = useAsyncFn(async () => {
     const {uri} = await camera.takePictureAsync();
@@ -92,12 +93,14 @@ const CheckinScreen = () => {
     if (data.code === 1) {
       const start = moment().startOf('month').valueOf() / 1000;
       const end = moment().endOf('month').valueOf() / 1000;
-      const _log = await handleSetLogs(user, start, end, name);
+      const _log = await handleSetLogs(user, start, end, ids);
       camera.resumePreview();
       Alert.alert('Bạn đã check in');
     }
     return data;
   });
+
+  console.log(value, error, id);
 
   const [position, setPosition] = useState({});
 

@@ -1,9 +1,8 @@
-import {memo, useMemo} from 'react';
+import {memo, useEffect, useMemo} from 'react';
 // @ts-ignore
 import moment from 'moment/moment';
 import {Color} from '../../themes/Color';
 import styled from 'styled-components';
-import {ActivityIndicator} from 'react-native';
 
 const ViewDayHeader = styled.View`
   flex-direction: column;
@@ -28,29 +27,25 @@ const SubTextHeader = styled.Text`
 
 interface propsHeader {
   date: any;
-  loading: boolean;
+  setkey: any;
 }
 
-export const Header = memo(({date, loading}: propsHeader) => {
-  const day = 'Tháng ' + moment(new Date(date)).format('MM - YYYY').toString();
-  const CurrentDay = useMemo(() => {
-    return <TextDayHeader>{day}</TextDayHeader>;
-  }, [day]);
+export const Header = memo(({date, setkey}: propsHeader) => {
+  const month = moment(new Date(date)).format('MM-YYYY').toString();
+  const text = 'Tháng ' + month;
 
-  return loading ? (
-    <View>
-      <ActivityIndicator color={Color.green} />
-    </View>
-  ) : (
+  useEffect(() => {
+    setkey(month);
+  }, [month]);
+
+  const CurrentDay = useMemo(() => {
+    return <TextDayHeader>{text}</TextDayHeader>;
+  }, [text]);
+
+  return (
     <ViewDayHeader>
       {CurrentDay}
       <SubTextHeader>(Danh sách lịch sử chấm công)</SubTextHeader>
     </ViewDayHeader>
   );
 });
-
-const View = styled.View`
-  align-items: center;
-  justify-content: center;
-  height: 64px;
-`;
