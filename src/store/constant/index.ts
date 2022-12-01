@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction, Store} from '@reduxjs/toolkit';
 import {combineReducers} from 'redux';
 import {useSelector} from 'react-redux';
-import { RawUser } from "../../utils/type";
+import {RawUser} from '../../utils/type';
 
 const initialState: RawUser | null = null;
 

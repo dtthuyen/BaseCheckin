@@ -6,7 +6,7 @@ import {Platform} from 'react-native';
 import {Fetch} from './fetch';
 import {setLogs} from '../store/constant';
 import {MOBILE_CLIENTS_URL, HISTORY_CHECKIN_URL} from './type';
-import {syncAllClients} from '../store/clients';
+import {syncAllClients, useClientByKey} from '../store/clients';
 
 export const newFormData = (payload: {[key: string]: any}) => {
   const _formData = new FormData();
@@ -155,13 +155,15 @@ export const handleGetClients = async user => {
   return data;
 };
 
-export const handleSetLogs = async (user, id, timestart, timeend) => {
+export const handleSetLogs = async (user, timestart, timeend, name) => {
+  console.log('handleSetLogs');
+
   const formData = newFormData({
     client_key: user.client_key,
     client_auth: 1,
     access_token: user.access_token,
     __code: user.__code,
-    client_id: id,
+    client_id: user.atIdClient,
     time_start: timestart,
     time_end: timeend,
   });
@@ -173,8 +175,9 @@ export const handleSetLogs = async (user, id, timestart, timeend) => {
 
   if (data.code === 1) {
     let newLog = {
-      name: user.mobile_clients[1].name,
+      name: name,
     };
+
     data.logs.forEach(item => {
       const item_logs = item.logs;
       const _day = moment(new Date(item.date * 1000))
@@ -214,7 +217,6 @@ export const handleSetLogs = async (user, id, timestart, timeend) => {
         },
       };
       setLogs(newLog);
-      // setLogsAction(newLog)
     });
   }
 

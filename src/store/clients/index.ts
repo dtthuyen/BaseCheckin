@@ -16,14 +16,10 @@ export const resetClients = reset;
 export const syncAllClients = (clients: RawClients[]) => {
   let query: {[id: string]: string[]} = {};
   let ids: string[] = [];
-  console.log('syncAllClients');
-  console.log(clients);
 
   clients.forEach(client => {
     ids.push(client['id'].toString());
   });
-
-  console.log(ids);
 
   batch(() => {
     syncClients(clients);

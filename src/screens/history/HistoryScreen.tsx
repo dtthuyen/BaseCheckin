@@ -8,7 +8,7 @@ import {useAtIdClient, useUser} from '../../store/constant';
 import {handleSetLogs} from '../../utils/func';
 import {useAsyncFn} from '../../hooks/useAsyncFn';
 import {CalendarView} from './Calender';
-import {getAllClients} from '../../store/clients';
+import {getAllClients, useClientByKey} from '../../store/clients';
 
 const Container = styled.View`
   flex: 1;
@@ -21,9 +21,10 @@ export const HistoryScreen = () => {
   const user = useUser();
   const clients = getAllClients();
   const id = useAtIdClient();
+  const name = useClientByKey(id)?.name;
 
   const [{value, loading, error}, getLogs] = useAsyncFn((start, end) => {
-    const _log = handleSetLogs(user, id, start, end);
+    const _log = handleSetLogs(user, start, end, name);
     return _log;
   }, []);
 
@@ -44,7 +45,6 @@ export const HistoryScreen = () => {
       moment(new Date(date.getFullYear(), date.getMonth() - 1, 1))
         .endOf('month')
         .valueOf() / 1000;
-    console.log(start, end);
     getLogs(start, end).then(r => {});
     subtractMonth();
   }, []);
@@ -58,7 +58,6 @@ export const HistoryScreen = () => {
       moment(new Date(date.getFullYear(), date.getMonth() + 1, 1))
         .endOf('month')
         .valueOf() / 1000;
-    console.log(start, end);
     getLogs(start, end).then(r => {});
     addMonth();
   }, []);

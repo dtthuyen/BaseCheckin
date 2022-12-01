@@ -21,7 +21,7 @@ const appReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['logs'],
+  whitelist: ['constant', 'clients', 'logs'],
 };
 
 const pReducer = persistReducer(persistConfig, appReducer);

@@ -7,7 +7,6 @@ import {
 } from '../utils/navigation';
 import {useUser} from '../store/constant';
 import {useEffect} from 'react';
-import {useAsyncFn} from '../hooks/useAsyncFn';
 
 const Container = styled.View`
   flex: 1;

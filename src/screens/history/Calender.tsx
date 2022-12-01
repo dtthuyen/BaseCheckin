@@ -16,8 +16,6 @@ interface props {
 export const CalendarView = ({pressLeft, pressRight, loading}: props) => {
   const log = useLogs();
 
-  // console.log(log);
-
   const dateDay = useCallback(date => {
     return (
       `${date.day}`.padStart(2, '0') + '/' + `${date.month}`.padStart(2, '0')

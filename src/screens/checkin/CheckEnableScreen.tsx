@@ -130,8 +130,6 @@ export const CheckEnableScreen = memo(
 
     const client = getAllClients();
 
-    console.log(client);
-
     const onPressClients = useCallback(() => {
       openModal();
     }, []);

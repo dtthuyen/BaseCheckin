@@ -18,6 +18,7 @@ import {ActivityIndicator, Alert} from 'react-native';
 import {TimeRun} from './component/TimeRun';
 import {CHECKIN_URL} from '../../utils/type';
 import 'moment/locale/vi';
+import {useClientByKey} from '../../store/clients';
 
 const CheckinScreen = () => {
   let camera: any;
@@ -66,6 +67,8 @@ const CheckinScreen = () => {
     );
   }, []);
 
+  const name = useClientByKey(id)?.name;
+
   const [{value, loading, error}, onCheckIn] = useAsyncFn(async () => {
     const {uri} = await camera.takePictureAsync();
     camera.pausePreview();
@@ -89,7 +92,7 @@ const CheckinScreen = () => {
     if (data.code === 1) {
       const start = moment().startOf('month').valueOf() / 1000;
       const end = moment().endOf('month').valueOf() / 1000;
-      const _log = await handleSetLogs(user, id, start, end);
+      const _log = await handleSetLogs(user, start, end, name);
       camera.resumePreview();
       Alert.alert('Bạn đã check in');
     }

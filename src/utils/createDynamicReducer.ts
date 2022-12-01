@@ -76,7 +76,6 @@ export const createDynamicReducer = <T extends {[x: string]: any}>(
   };
 
   const setQueries = (queries: Record<string, string[]>) => {
-    console.log(queries);
     return _getStore().dispatch(actions.setQueries(queries));
   };
 
